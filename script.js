@@ -1,36 +1,3 @@
-const DEFAULTS={
-  distance:1,
-  sr:2*Math.PI,
-  beamAngle:180,
-  reflectance:0.8,
-  efficacy:683,
-  iso:100,
-  middleGray:0.18
-};
-
-const RESULT_CARD_IDS={
-  lm:"convCardLm",
-  cd:"convCardCd",
-  lx:"convCardLx",
-  nit:"convCardNit",
-  ev:"convCardEv",
-  stops:"convCardStops",
-  exposure:"convCardExposure",
-  wm2:"convCardWm2",
-  sr:"convCardSr",
-  beamAngle:"convCardBeamAngle"
-};
-
-const PRESETS={
-  moonlight:{unit:"lx",value:0.1},
-  room:{unit:"lx",value:100},
-  office:{unit:"lx",value:500},
-  overcast:{unit:"lx",value:10000},
-  sunlight:{unit:"lx",value:100000},
-  hdr1000:{unit:"nit",value:1000},
-  hdr400:{unit:"nit",value:400}
-};
-
 const globalModeNote=document.getElementById("globalModeNote");
 const globalModeRadios=document.querySelectorAll('input[name="globalMode"]');
 const tabButtons=document.querySelectorAll(".tab-btn");
@@ -213,9 +180,7 @@ function showTooltip(text,x,y){
   tooltip.style.top=`${y + 12}px`;
   tooltip.classList.add("show");
 }
-function hideTooltip(){
-  tooltip.classList.remove("show");
-}
+function hideTooltip(){tooltip.classList.remove("show");}
 function applySimpleDefaults(){
   convDistanceInput.value=String(DEFAULTS.distance);
   convSrInput.value=DEFAULTS.sr.toFixed(4);
@@ -448,7 +413,7 @@ function resetConverter(){
   convertMain();
 }
 function applyConverterPreset(name){
-  const preset=PRESETS[name];
+  const preset=CONVERTER_PRESETS[name];
   if(!preset) return;
   convUnitSelect.value=preset.unit;
   convValueInput.value=String(preset.value);
@@ -472,6 +437,16 @@ function syncShutterPairFromInput(presetSelect,inputField){
     presetSelect.value="custom";
     updateShutterInputState(presetSelect,inputField);
   }
+}
+function populateShutterPresets(selectEl){
+  selectEl.innerHTML="";
+  SHUTTER_PRESETS.forEach(value=>{
+    const option=document.createElement("option");
+    option.value=value;
+    option.textContent=value==="custom"?"Custom":value;
+    if(value==="1/60") option.selected=true;
+    selectEl.appendChild(option);
+  });
 }
 function calculateCameraGeneric(apertureInput,shutterInput,isoInput,reflectanceInput,resultEvIso,resultEv100,resultLux,resultNit,resultStops,resultExposure){
   const aperture=parseFloat(apertureInput.value);
@@ -732,6 +707,19 @@ function applyPBRPreset(name,lux,reflectance){
   pbrResultStops.textContent=formatNumber(stopsValue);
   pbrResultExposure.textContent=formatNumber(exposureValue);
 }
+function populatePBRButtons(){
+  pbrPresetGrid.innerHTML="";
+  PBR_PRESETS.forEach(preset=>{
+    const button=document.createElement("button");
+    button.className="preset-btn";
+    button.type="button";
+    button.dataset.name=preset.name;
+    button.dataset.lux=String(preset.lux);
+    button.dataset.rho=String(preset.rho);
+    button.textContent=preset.name;
+    pbrPresetGrid.appendChild(button);
+  });
+}
 function runAllVisibleCalculations(){
   convertMain();
   calculateCamera();
@@ -743,10 +731,10 @@ function runAllVisibleCalculations(){
 }
 function initTooltipHandlers(){
   document.querySelectorAll(".info-btn").forEach(btn=>{
-    btn.addEventListener("mouseenter",e=>showTooltip(btn.dataset.tooltip||"",e.clientX,e.clientY));
-    btn.addEventListener("mousemove",e=>showTooltip(btn.dataset.tooltip||"",e.clientX,e.clientY));
+    btn.addEventListener("mouseenter",e=>showTooltip(TOOLTIP_TEXT[btn.dataset.tooltipKey]||"",e.clientX,e.clientY));
+    btn.addEventListener("mousemove",e=>showTooltip(TOOLTIP_TEXT[btn.dataset.tooltipKey]||"",e.clientX,e.clientY));
     btn.addEventListener("mouseleave",hideTooltip);
-    btn.addEventListener("focus",e=>showTooltip(btn.dataset.tooltip||"",e.clientX||0,e.clientY||0));
+    btn.addEventListener("focus",e=>showTooltip(TOOLTIP_TEXT[btn.dataset.tooltipKey]||"",e.clientX||0,e.clientY||0));
     btn.addEventListener("blur",hideTooltip);
   });
 }
@@ -829,11 +817,16 @@ function initEventListeners(){
   initTooltipHandlers();
 }
 function init(){
+  populateShutterPresets(camShutterPresetSelect);
+  populateShutterPresets(evShutterPresetSelect);
+  populatePBRButtons();
+
   applySimpleDefaults();
   updateGlobalModeUI();
   activateTab("converter");
   updateConverterFieldVisibility();
   initEventListeners();
+
   resetConverter();
   resetCamera();
   resetEV();
@@ -842,6 +835,7 @@ function init(){
   resetIES();
   resetLambert();
   applyPBRPreset("Room",100,DEFAULTS.reflectance);
+
   updateShutterInputState(evShutterPresetSelect,evShutterInput);
   updateShutterInputState(camShutterPresetSelect,camShutterInput);
 }
