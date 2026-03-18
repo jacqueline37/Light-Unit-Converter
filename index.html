@@ -19,7 +19,7 @@
   <main class="container">
     <header class="hero">
       <h1>Light Utility Suite</h1>
-      <p class="subtitle">Converter / EV / HDR / ACES / IES / PBR Reference</p>
+      <p class="subtitle">Converter / Camera / EV / HDR / ACES / IES / Lambert / PBR Reference</p>
     </header>
 
     <section class="card top-card">
@@ -44,16 +44,32 @@
 
     <nav class="tabs" aria-label="Tool Tabs">
       <button class="tab-btn active" data-tab="converter">Converter</button>
+      <button class="tab-btn" data-tab="camera">Camera</button>
       <button class="tab-btn" data-tab="ev">EV</button>
       <button class="tab-btn" data-tab="hdr">HDR</button>
       <button class="tab-btn" data-tab="aces">ACES</button>
       <button class="tab-btn" data-tab="ies">IES</button>
+      <button class="tab-btn" data-tab="lambert">Lambert</button>
       <button class="tab-btn" data-tab="pbr">PBR Reference</button>
     </nav>
 
     <section class="tab-panel active" id="tab-converter">
       <div class="card">
         <h2>Converter</h2>
+        <div class="preset-toolbar">
+          <label for="convPreset">Preset</label>
+          <select id="convPreset">
+            <option value="none" selected>None</option>
+            <option value="moonlight">Moonlight</option>
+            <option value="room">Room</option>
+            <option value="office">Office</option>
+            <option value="overcast">Overcast Day</option>
+            <option value="sunlight">Sunlight</option>
+            <option value="hdr1000">HDR1000 Display</option>
+            <option value="hdr400">HDR400 Display</option>
+          </select>
+        </div>
+
         <div class="grid">
           <div class="field">
             <label for="convValue">Value</label>
@@ -61,40 +77,63 @@
           </div>
           <div class="field">
             <label for="convUnit">Input Unit</label>
-            <select id="convUnit">
-              <option value="lm">Luminous Flux (lm)</option>
-              <option value="cd">Luminous Intensity (cd)</option>
-              <option value="lx">Illuminance (lx)</option>
-              <option value="nit">Luminance (cd/m², nit)</option>
-              <option value="ev">EV100</option>
-              <option value="stops">Stops</option>
-              <option value="exposure">Exposure Multiplier</option>
-              <option value="wm2">Irradiance (W/m²)</option>
-              <option value="sr">Solid Angle (sr)</option>
-            </select>
+            <div class="label-with-help">
+              <select id="convUnit">
+                <option value="lm">Luminous Flux (lm)</option>
+                <option value="cd">Luminous Intensity (cd)</option>
+                <option value="lx">Illuminance (lx)</option>
+                <option value="nit">Luminance (cd/m², nit)</option>
+                <option value="ev">EV100</option>
+                <option value="stops">Stops</option>
+                <option value="exposure">Exposure Multiplier</option>
+                <option value="wm2">Irradiance (W/m²)</option>
+                <option value="sr">Solid Angle (sr)</option>
+              </select>
+              <button class="info-btn" type="button" data-tooltip="Choose the input quantity to convert from.">?</button>
+            </div>
           </div>
 
           <div class="field adv conv-param" data-roles="distance">
             <label for="convDistance">Distance (m)</label>
-            <input id="convDistance" type="number" step="any" value="1">
+            <div class="label-with-help">
+              <input id="convDistance" type="number" step="any" value="1">
+              <button class="info-btn" type="button" data-tooltip="Used for cd ↔ lx and related conversions through the inverse-square law.">?</button>
+            </div>
           </div>
+
           <div class="field adv conv-param" data-roles="sr">
             <label for="convSr">Solid Angle (sr)</label>
-            <input id="convSr" type="number" step="any" value="6.2832">
+            <div class="label-with-help">
+              <input id="convSr" type="number" step="any" value="6.2832">
+              <button class="info-btn" type="button" data-tooltip="Steradian. Used for lm ↔ cd. 2π sr is a hemisphere, 4π sr is a full sphere.">?</button>
+            </div>
           </div>
+
           <div class="field adv conv-param" data-roles="sr">
             <label for="convBeamAngle">Beam Angle (deg)</label>
-            <input id="convBeamAngle" type="number" step="any" value="180">
+            <div class="label-with-help">
+              <input id="convBeamAngle" type="number" step="any" value="180">
+              <button class="info-btn" type="button" data-tooltip="Approximate cone angle used to derive the solid angle.">?</button>
+            </div>
           </div>
+
           <div class="field adv conv-param" data-roles="reflectance">
             <label for="convReflectance">Reflectance (0-1)</label>
-            <input id="convReflectance" type="number" step="any" min="0" max="1" value="0.8">
+            <div class="label-with-help">
+              <input id="convReflectance" type="number" step="any" min="0" max="1" value="0.8">
+              <button class="info-btn" type="button" data-tooltip="Lambertian reflectance used for lx ↔ nit conversion. 0.18 is middle gray, 0.8 is a bright diffuse surface.">?</button>
+            </div>
           </div>
+
           <div class="field adv conv-param" data-roles="efficacy">
             <label for="convEfficacy">Luminous Efficacy (lm/W)</label>
-            <input id="convEfficacy" type="number" step="any" value="683">
+            <div class="label-with-help">
+              <input id="convEfficacy" type="number" step="any" value="683">
+              <button class="info-btn" type="button" data-tooltip="Used for lx ↔ W/m². 683 lm/W is the photopic maximum.">?</button>
+            </div>
           </div>
         </div>
+
         <div class="actions">
           <button id="convConvertBtn">Convert</button>
           <button id="convResetBtn" class="secondary">Reset</button>
@@ -114,6 +153,68 @@
           <div class="result-item" id="convCardWm2"><span class="result-label">Irradiance (W/m²)</span><span class="result-value" id="convResultWm2">-</span></div>
           <div class="result-item" id="convCardSr"><span class="result-label">Solid Angle (sr)</span><span class="result-value" id="convResultSr">-</span></div>
           <div class="result-item" id="convCardBeamAngle"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="convResultBeamAngle">-</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-camera">
+      <div class="card">
+        <h2>Camera Mode</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="camAperture">Aperture (f-number)</label>
+            <input id="camAperture" type="number" step="any" value="8">
+          </div>
+          <div class="field">
+            <label for="camShutterPreset">Shutter Preset</label>
+            <select id="camShutterPreset">
+              <option value="1/8000">1/8000</option>
+              <option value="1/4000">1/4000</option>
+              <option value="1/2000">1/2000</option>
+              <option value="1/1000">1/1000</option>
+              <option value="1/500">1/500</option>
+              <option value="1/250">1/250</option>
+              <option value="1/125">1/125</option>
+              <option value="1/60" selected>1/60</option>
+              <option value="1/30">1/30</option>
+              <option value="1/15">1/15</option>
+              <option value="1/8">1/8</option>
+              <option value="1/4">1/4</option>
+              <option value="1/2">1/2</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="4">4</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="camShutterInput">Shutter (sec or fraction)</label>
+            <input id="camShutterInput" type="text" value="1/60" placeholder="1/60 or 0.0167">
+          </div>
+          <div class="field">
+            <label for="camIso">ISO</label>
+            <input id="camIso" type="number" step="any" value="100">
+          </div>
+          <div class="field adv">
+            <label for="camReflectance">Reflectance (0-1)</label>
+            <input id="camReflectance" type="number" step="any" min="0" max="1" value="0.8">
+          </div>
+        </div>
+        <div class="actions">
+          <button id="camCalcBtn">Calculate</button>
+          <button id="camResetBtn" class="secondary">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Camera Results</h2>
+        <div class="results">
+          <div class="result-item"><span class="result-label">EV at ISO</span><span class="result-value" id="camResultEvIso">-</span></div>
+          <div class="result-item"><span class="result-label">EV100</span><span class="result-value" id="camResultEv100">-</span></div>
+          <div class="result-item"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="camResultLux">-</span></div>
+          <div class="result-item"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="camResultNit">-</span></div>
+          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="camResultStops">-</span></div>
+          <div class="result-item"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="camResultExposure">-</span></div>
         </div>
       </div>
     </section>
@@ -296,6 +397,42 @@
       </div>
     </section>
 
+    <section class="tab-panel" id="tab-lambert">
+      <div class="card">
+        <h2>Lambert Helper</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="lambertValue">Value</label>
+            <input id="lambertValue" type="number" step="any" value="100">
+          </div>
+          <div class="field">
+            <label for="lambertUnit">Input Type</label>
+            <select id="lambertUnit">
+              <option value="lx">Illuminance (lx)</option>
+              <option value="nit">Luminance (cd/m², nit)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="lambertReflectance">Reflectance (0-1)</label>
+            <input id="lambertReflectance" type="number" step="any" min="0" max="1" value="0.8">
+          </div>
+        </div>
+        <div class="actions">
+          <button id="lambertCalcBtn">Calculate</button>
+          <button id="lambertResetBtn" class="secondary">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Lambert Results</h2>
+        <div class="results">
+          <div class="result-item"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="lambertResultLux">-</span></div>
+          <div class="result-item"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="lambertResultNit">-</span></div>
+          <div class="result-item"><span class="result-label">Approximation</span><span class="result-value" id="lambertResultApprox">-</span></div>
+        </div>
+      </div>
+    </section>
+
     <section class="tab-panel" id="tab-pbr">
       <div class="card">
         <h2>PBR Light Reference</h2>
@@ -337,6 +474,8 @@
         <li>ACES tool uses scene-linear exposure multiplication around middle gray</li>
       </ul>
     </section>
+
+    <div id="tooltip" class="tooltip" aria-hidden="true"></div>
   </main>
   <script src="script.js"></script>
 </body>
