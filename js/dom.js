@@ -12,7 +12,6 @@ window.AppDom={
   convSrInput:document.getElementById("convSr"),
   convBeamAngleInput:document.getElementById("convBeamAngle"),
   convReflectanceInput:document.getElementById("convReflectance"),
-  convEfficacyInput:document.getElementById("convEfficacy"),
   convParamFields:document.querySelectorAll(".conv-param"),
   convConvertBtn:document.getElementById("convConvertBtn"),
   convResetBtn:document.getElementById("convResetBtn"),
@@ -20,10 +19,8 @@ window.AppDom={
   convResultCd:document.getElementById("convResultCd"),
   convResultLx:document.getElementById("convResultLx"),
   convResultNit:document.getElementById("convResultNit"),
-  convResultEv:document.getElementById("convResultEv"),
   convResultStops:document.getElementById("convResultStops"),
   convResultExposure:document.getElementById("convResultExposure"),
-  convResultWm2:document.getElementById("convResultWm2"),
   convResultSr:document.getElementById("convResultSr"),
   convResultBeamAngle:document.getElementById("convResultBeamAngle"),
 
