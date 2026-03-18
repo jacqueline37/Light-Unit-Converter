@@ -1,0 +1,17 @@
+.tab-panel{
+  display:none;
+}
+.tab-panel.active{
+  display:block;
+}
+.hidden{
+  display:none !important;
+}
+input:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+}
+.result-item-active{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px rgba(122,162,255,.35) inset;
+}
