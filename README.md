@@ -202,6 +202,14 @@ Results depend on these assumptions.
 
 ---
 
+## Feedback
+
+This is a small personal tool.
+If you notice incorrect results or bugs,
+please open an issue on GitHub.
+
+---
+
 ## Notes
 
 This tool was made as a personal utility.
