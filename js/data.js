@@ -4,7 +4,6 @@ window.AppData={
     sr:2*Math.PI,
     beamAngle:180,
     reflectance:0.8,
-    efficacy:683,
     iso:100,
     middleGray:0.18
   },
@@ -13,10 +12,8 @@ window.AppData={
     cd:"convCardCd",
     lx:"convCardLx",
     nit:"convCardNit",
-    ev:"convCardEv",
     stops:"convCardStops",
     exposure:"convCardExposure",
-    wm2:"convCardWm2",
     sr:"convCardSr",
     beamAngle:"convCardBeamAngle"
   },
@@ -38,8 +35,7 @@ window.AppData={
     distance:"Used for cd ↔ lx and related conversions through the inverse-square law.",
     sr:"Steradian. Used for lm ↔ cd. 2π sr is a hemisphere, 4π sr is a full sphere.",
     beamAngle:"Approximate cone angle used to derive the solid angle.",
-    reflectance:"Lambertian reflectance used for lx ↔ nit conversion. 0.18 is middle gray, 0.8 is a bright diffuse surface.",
-    efficacy:"Used for lx ↔ W/m². 683 lm/W is the photopic maximum."
+    reflectance:"Lambertian reflectance used for lx ↔ nit conversion. 0.18 is middle gray, 0.8 is a bright diffuse surface."
   },
   PBR_PRESETS:[
     {name:"Moonlight",lux:0.1,rho:0.8},
