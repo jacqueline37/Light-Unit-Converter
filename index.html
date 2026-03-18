@@ -1,54 +1,60 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Light Unit Converter</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="container">
     <header class="hero">
       <h1>Light Unit Converter</h1>
-      <p class="subtitle">
-        lm / cd / lx / cd/m² / EV を条件つきで変換する簡易ツール
-      </p>
+      <p class="subtitle">lm / cd / lx / nit / EV / stops / exposure / W/m² / sr を仮定つきで変換するツール</p>
     </header>
 
     <section class="card">
+      <h2>Input</h2>
       <div class="grid">
         <div class="field">
-          <label for="inputValue">Input Value</label>
-          <input id="inputValue" type="number" step="any" value="1000" />
+          <label for="inputValue">Value</label>
+          <input id="inputValue" type="number" step="any" value="1000">
         </div>
-
         <div class="field">
-          <label for="inputUnit">Input Unit</label>
+          <label for="inputUnit">Unit</label>
           <select id="inputUnit">
             <option value="lm">Lumen (lm)</option>
             <option value="cd">Candela (cd)</option>
             <option value="lx">Lux (lx)</option>
-            <option value="nit">Luminance (cd/m²)</option>
+            <option value="nit">Nit (cd/m²)</option>
             <option value="ev">EV</option>
+            <option value="stops">Stops</option>
+            <option value="exposure">Exposure</option>
+            <option value="wm2">W/m²</option>
+            <option value="sr">Steradian (sr)</option>
           </select>
         </div>
-
         <div class="field">
           <label for="distance">Distance (m)</label>
-          <input id="distance" type="number" step="any" value="1" />
+          <input id="distance" type="number" step="any" value="1">
         </div>
-
+        <div class="field">
+          <label for="solidAngle">Solid Angle (sr)</label>
+          <input id="solidAngle" type="number" step="any" value="3.1416">
+        </div>
         <div class="field">
           <label for="beamAngle">Beam Angle (deg)</label>
-          <input id="beamAngle" type="number" step="any" value="120" />
+          <input id="beamAngle" type="number" step="any" value="120">
         </div>
-
         <div class="field">
-          <label for="reflectance">Reflectance (0 - 1)</label>
-          <input id="reflectance" type="number" step="any" min="0" max="1" value="0.8" />
+          <label for="reflectance">Reflectance (0-1)</label>
+          <input id="reflectance" type="number" step="any" min="0" max="1" value="0.8">
+        </div>
+        <div class="field">
+          <label for="efficacy">Luminous Efficacy (lm/W)</label>
+          <input id="efficacy" type="number" step="any" value="683">
         </div>
       </div>
-
       <div class="actions">
         <button id="convertBtn">Convert</button>
         <button id="resetBtn" class="secondary">Reset</button>
@@ -57,42 +63,33 @@
 
     <section class="card">
       <h2>Results</h2>
-      <div class="results" id="results">
-        <div class="result-item">
-          <span class="result-label">Lumen (lm)</span>
-          <span class="result-value" id="resultLm">-</span>
-        </div>
-        <div class="result-item">
-          <span class="result-label">Candela (cd)</span>
-          <span class="result-value" id="resultCd">-</span>
-        </div>
-        <div class="result-item">
-          <span class="result-label">Lux (lx)</span>
-          <span class="result-value" id="resultLx">-</span>
-        </div>
-        <div class="result-item">
-          <span class="result-label">Luminance (cd/m²)</span>
-          <span class="result-value" id="resultNit">-</span>
-        </div>
-        <div class="result-item">
-          <span class="result-label">EV</span>
-          <span class="result-value" id="resultEv">-</span>
-        </div>
+      <div class="results">
+        <div class="result-item"><span class="result-label">Lumen (lm)</span><span class="result-value" id="resultLm">-</span></div>
+        <div class="result-item"><span class="result-label">Candela (cd)</span><span class="result-value" id="resultCd">-</span></div>
+        <div class="result-item"><span class="result-label">Lux (lx)</span><span class="result-value" id="resultLx">-</span></div>
+        <div class="result-item"><span class="result-label">Nit (cd/m²)</span><span class="result-value" id="resultNit">-</span></div>
+        <div class="result-item"><span class="result-label">EV</span><span class="result-value" id="resultEv">-</span></div>
+        <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="resultStops">-</span></div>
+        <div class="result-item"><span class="result-label">Exposure</span><span class="result-value" id="resultExposure">-</span></div>
+        <div class="result-item"><span class="result-label">W/m²</span><span class="result-value" id="resultWm2">-</span></div>
+        <div class="result-item"><span class="result-label">Steradian (sr)</span><span class="result-value" id="resultSr">-</span></div>
+        <div class="result-item"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="resultBeamAngle">-</span></div>
       </div>
     </section>
 
     <section class="card note-card">
       <h2>Assumptions</h2>
       <ul>
-        <li>lm → cd は beam angle から立体角を近似して計算</li>
-        <li>cd ↔ lx は正面照射・逆二乗則を仮定</li>
-        <li>lx ↔ cd/m² は Lambert 面を仮定</li>
-        <li>EV ↔ lx は簡易換算</li>
-        <li>現実の照明機材・材質・配光を完全再現するものではありません</li>
+        <li>lm ↔ cd は sr を用いる: cd = lm / sr</li>
+        <li>cd ↔ lx は正面照射の逆二乗則: lx = cd / d²</li>
+        <li>lx ↔ nit は Lambert 面: nit = lx × reflectance / π</li>
+        <li>lx ↔ W/m² は luminous efficacy を使用: lx = W/m² × efficacy</li>
+        <li>EV ↔ lx は近似式: lx ≒ 2.5 × 2^EV</li>
+        <li>stops は EV と同じ相対段数、exposure は 2^stops</li>
+        <li>Beam Angle は円錐近似: sr = 2π(1-cos(θ/2))</li>
       </ul>
     </section>
   </main>
-
   <script src="script.js"></script>
 </body>
 </html>
