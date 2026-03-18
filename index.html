@@ -1,210 +1,312 @@
-const inputValue=document.getElementById("inputValue");
-const inputUnit=document.getElementById("inputUnit");
-const distance=document.getElementById("distance");
-const solidAngle=document.getElementById("solidAngle");
-const beamAngle=document.getElementById("beamAngle");
-const reflectance=document.getElementById("reflectance");
-const efficacy=document.getElementById("efficacy");
-const resultLm=document.getElementById("resultLm");
-const resultCd=document.getElementById("resultCd");
-const resultLx=document.getElementById("resultLx");
-const resultNit=document.getElementById("resultNit");
-const resultEv=document.getElementById("resultEv");
-const resultStops=document.getElementById("resultStops");
-const resultExposure=document.getElementById("resultExposure");
-const resultWm2=document.getElementById("resultWm2");
-const resultSr=document.getElementById("resultSr");
-const resultBeamAngle=document.getElementById("resultBeamAngle");
-const convertBtn=document.getElementById("convertBtn");
-const resetBtn=document.getElementById("resetBtn");
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Light Utility Suite</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <h1>Light Utility Suite</h1>
+      <p class="subtitle">Converter / EV / HDR / ACES / IES / PBR Reference</p>
+    </header>
 
-function degToRad(deg){return deg*Math.PI/180;}
-function radToDeg(rad){return rad*180/Math.PI;}
-function clamp(value,min,max){return Math.min(Math.max(value,min),max);}
-function formatNumber(value){
-  if(!Number.isFinite(value)) return "-";
-  const abs=Math.abs(value);
-  if(abs>=100000||abs>0&&abs<0.001) return value.toExponential(4);
-  return Number(value.toFixed(4)).toString();
-}
-function beamAngleToSteradian(angleDeg){
-  const safe=clamp(angleDeg,0.0001,179.9999);
-  const half=degToRad(safe/2);
-  return 2*Math.PI*(1-Math.cos(half));
-}
-function steradianToBeamAngle(sr){
-  const safe=clamp(sr,0,2*Math.PI);
-  const cosHalf=1-safe/(2*Math.PI);
-  const half=Math.acos(clamp(cosHalf,-1,1));
-  return radToDeg(half*2);
-}
-function evToLux(ev){return 2.5*Math.pow(2,ev);}
-function luxToEv(lux){return lux>0?Math.log2(lux/2.5):NaN;}
-function stopsToExposure(stops){return Math.pow(2,stops);}
-function exposureToStops(exposure){return exposure>0?Math.log2(exposure):NaN;}
-function luxToWm2(lux,eff){return eff>0?lux/eff:NaN;}
-function wm2ToLux(wm2,eff){return wm2*eff;}
-function setResults(data){
-  resultLm.textContent=formatNumber(data.lm);
-  resultCd.textContent=formatNumber(data.cd);
-  resultLx.textContent=formatNumber(data.lx);
-  resultNit.textContent=formatNumber(data.nit);
-  resultEv.textContent=formatNumber(data.ev);
-  resultStops.textContent=formatNumber(data.stops);
-  resultExposure.textContent=formatNumber(data.exposure);
-  resultWm2.textContent=formatNumber(data.wm2);
-  resultSr.textContent=formatNumber(data.sr);
-  resultBeamAngle.textContent=formatNumber(data.beamAngle);
-}
-function syncFromBeamAngle(){
-  const angle=parseFloat(beamAngle.value);
-  if(Number.isFinite(angle)&&angle>0&&angle<180){
-    solidAngle.value=beamAngleToSteradian(angle).toFixed(4);
-  }
-}
-function syncFromSolidAngle(){
-  const sr=parseFloat(solidAngle.value);
-  if(Number.isFinite(sr)&&sr>=0&&sr<=2*Math.PI){
-    beamAngle.value=steradianToBeamAngle(sr).toFixed(4);
-  }
-}
-function convert(){
-  const value=parseFloat(inputValue.value);
-  const unit=inputUnit.value;
-  const dist=parseFloat(distance.value);
-  let sr=parseFloat(solidAngle.value);
-  let angle=parseFloat(beamAngle.value);
-  const rho=parseFloat(reflectance.value);
-  const eff=parseFloat(efficacy.value);
+    <section class="card top-card">
+      <div class="mode-row">
+        <label class="radio-option"><input type="radio" name="globalMode" value="simple" checked><span>Simple (Recommended Defaults)</span></label>
+        <label class="radio-option"><input type="radio" name="globalMode" value="advanced"><span>Advanced (Physical Parameters)</span></label>
+      </div>
+      <p class="mode-note" id="globalModeNote">Simple mode uses recommended defaults: distance = 1m, sr = 2π, beam angle = 180°, reflectance = 0.8, efficacy = 683 lm/W, ISO = 100.</p>
+      <div class="defaults-box">
+        <div class="defaults-title">Recommended defaults</div>
+        <div class="defaults-list">
+          <span>Distance: <strong>1 m</strong></span>
+          <span>sr: <strong>2π</strong></span>
+          <span>Beam Angle: <strong>180°</strong></span>
+          <span>Reflectance: <strong>0.8</strong></span>
+          <span>Efficacy: <strong>683 lm/W</strong></span>
+          <span>ISO: <strong>100</strong></span>
+          <span>Middle Gray: <strong>0.18</strong></span>
+        </div>
+      </div>
+    </section>
 
-  if(!Number.isFinite(value)){alert("Value を正しく入力してください。");return;}
-  if(!Number.isFinite(dist)||dist<=0){alert("Distance は 0 より大きい値にしてください。");return;}
-  if(!Number.isFinite(rho)||rho<0||rho>1){alert("Reflectance は 0〜1 の範囲で入力してください。");return;}
-  if(!Number.isFinite(eff)||eff<=0){alert("Luminous Efficacy は 0 より大きい値にしてください。");return;}
+    <nav class="tabs" aria-label="Tool Tabs">
+      <button class="tab-btn active" data-tab="converter">Converter</button>
+      <button class="tab-btn" data-tab="ev">EV</button>
+      <button class="tab-btn" data-tab="hdr">HDR</button>
+      <button class="tab-btn" data-tab="aces">ACES</button>
+      <button class="tab-btn" data-tab="ies">IES</button>
+      <button class="tab-btn" data-tab="pbr">PBR Reference</button>
+    </nav>
 
-  if(Number.isFinite(sr)&&sr>0&&sr<=2*Math.PI){
-    angle=steradianToBeamAngle(sr);
-    beamAngle.value=angle.toFixed(4);
-  }else if(Number.isFinite(angle)&&angle>0&&angle<180){
-    sr=beamAngleToSteradian(angle);
-    solidAngle.value=sr.toFixed(4);
-  }else{
-    alert("Solid Angle または Beam Angle を正しく入力してください。");
-    return;
-  }
+    <section class="tab-panel active" id="tab-converter">
+      <div class="card">
+        <h2>Converter</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="convValue">Value</label>
+            <input id="convValue" type="number" step="any" value="1000">
+          </div>
+          <div class="field">
+            <label for="convUnit">Unit</label>
+            <select id="convUnit">
+              <option value="lm">Lumen (lm)</option>
+              <option value="cd">Candela (cd)</option>
+              <option value="lx">Lux (lx)</option>
+              <option value="nit">Nit (cd/m²)</option>
+              <option value="ev">EV</option>
+              <option value="stops">Stops</option>
+              <option value="exposure">Exposure</option>
+              <option value="wm2">W/m²</option>
+              <option value="sr">Steradian (sr)</option>
+            </select>
+          </div>
 
-  let lm=NaN,cd=NaN,lx=NaN,nit=NaN,ev=NaN,stops=NaN,exposure=NaN,wm2=NaN;
+          <div class="field adv conv-param" data-roles="distance">
+            <label for="convDistance">Distance (m)</label>
+            <input id="convDistance" type="number" step="any" value="1">
+          </div>
+          <div class="field adv conv-param" data-roles="sr">
+            <label for="convSr">Solid Angle (sr)</label>
+            <input id="convSr" type="number" step="any" value="6.2832">
+          </div>
+          <div class="field adv conv-param" data-roles="sr">
+            <label for="convBeamAngle">Beam Angle (deg)</label>
+            <input id="convBeamAngle" type="number" step="any" value="180">
+          </div>
+          <div class="field adv conv-param" data-roles="reflectance">
+            <label for="convReflectance">Reflectance (0-1)</label>
+            <input id="convReflectance" type="number" step="any" min="0" max="1" value="0.8">
+          </div>
+          <div class="field adv conv-param" data-roles="efficacy">
+            <label for="convEfficacy">Luminous Efficacy (lm/W)</label>
+            <input id="convEfficacy" type="number" step="any" value="683">
+          </div>
+        </div>
+        <div class="actions">
+          <button id="convConvertBtn">Convert</button>
+          <button id="convResetBtn" class="secondary">Reset</button>
+        </div>
+      </div>
 
-  switch(unit){
-    case "lm":
-      lm=value;
-      cd=lm/sr;
-      lx=cd/(dist*dist);
-      nit=(lx*rho)/Math.PI;
-      ev=luxToEv(lx);
-      stops=ev;
-      exposure=stopsToExposure(stops);
-      wm2=luxToWm2(lx,eff);
-      break;
-    case "cd":
-      cd=value;
-      lm=cd*sr;
-      lx=cd/(dist*dist);
-      nit=(lx*rho)/Math.PI;
-      ev=luxToEv(lx);
-      stops=ev;
-      exposure=stopsToExposure(stops);
-      wm2=luxToWm2(lx,eff);
-      break;
-    case "lx":
-      lx=value;
-      cd=lx*(dist*dist);
-      lm=cd*sr;
-      nit=(lx*rho)/Math.PI;
-      ev=luxToEv(lx);
-      stops=ev;
-      exposure=stopsToExposure(stops);
-      wm2=luxToWm2(lx,eff);
-      break;
-    case "nit":
-      nit=value;
-      if(rho===0){alert("Reflectance が 0 だと nit から lux に変換できません。");return;}
-      lx=(nit*Math.PI)/rho;
-      cd=lx*(dist*dist);
-      lm=cd*sr;
-      ev=luxToEv(lx);
-      stops=ev;
-      exposure=stopsToExposure(stops);
-      wm2=luxToWm2(lx,eff);
-      break;
-    case "ev":
-      ev=value;
-      stops=ev;
-      exposure=stopsToExposure(stops);
-      lx=evToLux(ev);
-      cd=lx*(dist*dist);
-      lm=cd*sr;
-      nit=(lx*rho)/Math.PI;
-      wm2=luxToWm2(lx,eff);
-      break;
-    case "stops":
-      stops=value;
-      ev=stops;
-      exposure=stopsToExposure(stops);
-      lx=evToLux(ev);
-      cd=lx*(dist*dist);
-      lm=cd*sr;
-      nit=(lx*rho)/Math.PI;
-      wm2=luxToWm2(lx,eff);
-      break;
-    case "exposure":
-      exposure=value;
-      if(exposure<=0){alert("Exposure は 0 より大きい値にしてください。");return;}
-      stops=exposureToStops(exposure);
-      ev=stops;
-      lx=evToLux(ev);
-      cd=lx*(dist*dist);
-      lm=cd*sr;
-      nit=(lx*rho)/Math.PI;
-      wm2=luxToWm2(lx,eff);
-      break;
-    case "wm2":
-      wm2=value;
-      lx=wm2ToLux(wm2,eff);
-      cd=lx*(dist*dist);
-      lm=cd*sr;
-      nit=(lx*rho)/Math.PI;
-      ev=luxToEv(lx);
-      stops=ev;
-      exposure=stopsToExposure(stops);
-      break;
-    case "sr":
-      sr=value;
-      if(!Number.isFinite(sr)||sr<=0||sr>2*Math.PI){alert("Steradian は 0 より大きく 2π 以下にしてください。");return;}
-      solidAngle.value=sr.toFixed(4);
-      angle=steradianToBeamAngle(sr);
-      beamAngle.value=angle.toFixed(4);
-      lm=cd=lx=nit=ev=stops=exposure=wm2=NaN;
-      break;
-    default:
-      alert("未対応の単位です。");
-      return;
-  }
+      <div class="card">
+        <h2>Converter Results</h2>
+        <div class="results">
+          <div class="result-item"><span class="result-label">Lumen (lm)</span><span class="result-value" id="convResultLm">-</span></div>
+          <div class="result-item"><span class="result-label">Candela (cd)</span><span class="result-value" id="convResultCd">-</span></div>
+          <div class="result-item"><span class="result-label">Lux (lx)</span><span class="result-value" id="convResultLx">-</span></div>
+          <div class="result-item"><span class="result-label">Nit (cd/m²)</span><span class="result-value" id="convResultNit">-</span></div>
+          <div class="result-item"><span class="result-label">EV</span><span class="result-value" id="convResultEv">-</span></div>
+          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="convResultStops">-</span></div>
+          <div class="result-item"><span class="result-label">Exposure</span><span class="result-value" id="convResultExposure">-</span></div>
+          <div class="result-item"><span class="result-label">W/m²</span><span class="result-value" id="convResultWm2">-</span></div>
+          <div class="result-item"><span class="result-label">Steradian (sr)</span><span class="result-value" id="convResultSr">-</span></div>
+          <div class="result-item"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="convResultBeamAngle">-</span></div>
+        </div>
+      </div>
+    </section>
 
-  setResults({lm,cd,lx,nit,ev,stops,exposure,wm2,sr,beamAngle:angle});
-}
-function resetFields(){
-  inputValue.value="1000";
-  inputUnit.value="lm";
-  distance.value="1";
-  solidAngle.value="3.1416";
-  beamAngle.value="120";
-  reflectance.value="0.8";
-  efficacy.value="683";
-  convert();
-}
-beamAngle.addEventListener("input",syncFromBeamAngle);
-solidAngle.addEventListener("input",syncFromSolidAngle);
-convertBtn.addEventListener("click",convert);
-resetBtn.addEventListener("click",resetFields);
-window.addEventListener("load",convert);
+    <section class="tab-panel" id="tab-ev">
+      <div class="card">
+        <h2>EV Calculator</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="evAperture">Aperture (f)</label>
+            <input id="evAperture" type="number" step="any" value="8">
+          </div>
+          <div class="field">
+            <label for="evShutter">Shutter (s)</label>
+            <input id="evShutter" type="number" step="any" value="0.008">
+          </div>
+          <div class="field adv">
+            <label for="evIso">ISO</label>
+            <input id="evIso" type="number" step="any" value="100">
+          </div>
+          <div class="field adv">
+            <label for="evReflectance">Reflectance (0-1)</label>
+            <input id="evReflectance" type="number" step="any" min="0" max="1" value="0.8">
+          </div>
+        </div>
+        <div class="actions">
+          <button id="evCalcBtn">Calculate</button>
+          <button id="evResetBtn" class="secondary">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>EV Results</h2>
+        <div class="results">
+          <div class="result-item"><span class="result-label">EV at ISO</span><span class="result-value" id="evResultEvIso">-</span></div>
+          <div class="result-item"><span class="result-label">EV100</span><span class="result-value" id="evResultEv100">-</span></div>
+          <div class="result-item"><span class="result-label">Lux</span><span class="result-value" id="evResultLux">-</span></div>
+          <div class="result-item"><span class="result-label">Nit (cd/m²)</span><span class="result-value" id="evResultNit">-</span></div>
+          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="evResultStops">-</span></div>
+          <div class="result-item"><span class="result-label">Exposure</span><span class="result-value" id="evResultExposure">-</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-hdr">
+      <div class="card">
+        <h2>HDR Nit Calculator</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="hdrValue">Value</label>
+            <input id="hdrValue" type="number" step="any" value="1000">
+          </div>
+          <div class="field">
+            <label for="hdrUnit">Input Type</label>
+            <select id="hdrUnit">
+              <option value="nit">Nit</option>
+              <option value="ev">EV</option>
+              <option value="stops">Stops</option>
+              <option value="exposure">Exposure</option>
+              <option value="lx">Lux</option>
+            </select>
+          </div>
+          <div class="field adv">
+            <label for="hdrReflectance">Reflectance (0-1)</label>
+            <input id="hdrReflectance" type="number" step="any" min="0" max="1" value="0.8">
+          </div>
+        </div>
+        <div class="actions">
+          <button id="hdrCalcBtn">Calculate</button>
+          <button id="hdrResetBtn" class="secondary">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>HDR Results</h2>
+        <div class="results">
+          <div class="result-item"><span class="result-label">Nit</span><span class="result-value" id="hdrResultNit">-</span></div>
+          <div class="result-item"><span class="result-label">Lux</span><span class="result-value" id="hdrResultLux">-</span></div>
+          <div class="result-item"><span class="result-label">EV</span><span class="result-value" id="hdrResultEv">-</span></div>
+          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="hdrResultStops">-</span></div>
+          <div class="result-item"><span class="result-label">Exposure</span><span class="result-value" id="hdrResultExposure">-</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-aces">
+      <div class="card">
+        <h2>ACES Exposure Tool</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="acesSceneLinear">Scene Linear Value</label>
+            <input id="acesSceneLinear" type="number" step="any" value="0.18">
+          </div>
+          <div class="field">
+            <label for="acesStops">Stops</label>
+            <input id="acesStops" type="number" step="any" value="0">
+          </div>
+          <div class="field adv">
+            <label for="acesMiddleGray">Middle Gray</label>
+            <input id="acesMiddleGray" type="number" step="any" value="0.18">
+          </div>
+        </div>
+        <div class="actions">
+          <button id="acesCalcBtn">Apply</button>
+          <button id="acesResetBtn" class="secondary">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>ACES Results</h2>
+        <div class="results">
+          <div class="result-item"><span class="result-label">Input Scene Linear</span><span class="result-value" id="acesResultInput">-</span></div>
+          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="acesResultStops">-</span></div>
+          <div class="result-item"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="acesResultExposure">-</span></div>
+          <div class="result-item"><span class="result-label">Output Scene Linear</span><span class="result-value" id="acesResultOutput">-</span></div>
+          <div class="result-item"><span class="result-label">Relative to Middle Gray</span><span class="result-value" id="acesResultRelativeGray">-</span></div>
+          <div class="result-item"><span class="result-label">EV Equivalent</span><span class="result-value" id="acesResultEv">-</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-ies">
+      <div class="card">
+        <h2>IES Helper</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="iesLm">Lumen (lm)</label>
+            <input id="iesLm" type="number" step="any" value="1000">
+          </div>
+          <div class="field">
+            <label for="iesDistance">Distance (m)</label>
+            <input id="iesDistance" type="number" step="any" value="1">
+          </div>
+          <div class="field adv">
+            <label for="iesSr">Solid Angle (sr)</label>
+            <input id="iesSr" type="number" step="any" value="6.2832">
+          </div>
+          <div class="field adv">
+            <label for="iesBeamAngle">Beam Angle (deg)</label>
+            <input id="iesBeamAngle" type="number" step="any" value="180">
+          </div>
+        </div>
+        <div class="actions">
+          <button id="iesCalcBtn">Calculate</button>
+          <button id="iesResetBtn" class="secondary">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>IES Results</h2>
+        <div class="results">
+          <div class="result-item"><span class="result-label">Lumen (lm)</span><span class="result-value" id="iesResultLm">-</span></div>
+          <div class="result-item"><span class="result-label">Candela (cd)</span><span class="result-value" id="iesResultCd">-</span></div>
+          <div class="result-item"><span class="result-label">Lux at Distance</span><span class="result-value" id="iesResultLux">-</span></div>
+          <div class="result-item"><span class="result-label">Solid Angle (sr)</span><span class="result-value" id="iesResultSr">-</span></div>
+          <div class="result-item"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="iesResultBeamAngle">-</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-pbr">
+      <div class="card">
+        <h2>PBR Light Reference</h2>
+        <div class="preset-grid" id="pbrPresetGrid">
+          <button class="preset-btn" data-name="Moonlight" data-lux="0.1" data-rho="0.8">Moonlight</button>
+          <button class="preset-btn" data-name="Dark Interior" data-lux="10" data-rho="0.8">Dark Interior</button>
+          <button class="preset-btn" data-name="Room" data-lux="100" data-rho="0.8">Room</button>
+          <button class="preset-btn" data-name="Office" data-lux="500" data-rho="0.8">Office</button>
+          <button class="preset-btn" data-name="Overcast Day" data-lux="10000" data-rho="0.8">Overcast Day</button>
+          <button class="preset-btn" data-name="Sunlight" data-lux="100000" data-rho="0.8">Sunlight</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Preset Result</h2>
+        <div class="results">
+          <div class="result-item"><span class="result-label">Preset</span><span class="result-value" id="pbrResultName">-</span></div>
+          <div class="result-item"><span class="result-label">Lux</span><span class="result-value" id="pbrResultLux">-</span></div>
+          <div class="result-item"><span class="result-label">Nit</span><span class="result-value" id="pbrResultNit">-</span></div>
+          <div class="result-item"><span class="result-label">EV</span><span class="result-value" id="pbrResultEv">-</span></div>
+          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="pbrResultStops">-</span></div>
+          <div class="result-item"><span class="result-label">Exposure</span><span class="result-value" id="pbrResultExposure">-</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card note-card">
+      <h2>Assumptions</h2>
+      <ul>
+        <li>lm ↔ cd: cd = lm / sr</li>
+        <li>cd ↔ lx: lx = cd / d² (normal incidence)</li>
+        <li>lx ↔ nit: nit = lx × reflectance / π (Lambert surface)</li>
+        <li>lx ↔ W/m²: lx = W/m² × efficacy</li>
+        <li>EV ↔ lx: lx ≒ 2.5 × 2^EV</li>
+        <li>Stops are treated as EV-equivalent relative exposure units</li>
+        <li>Exposure multiplier = 2^stops</li>
+        <li>Beam angle ↔ sr uses cone approximation</li>
+        <li>EV calculator uses EV100 = log2(N²/t), then adjusts for ISO</li>
+        <li>ACES tool uses scene-linear exposure multiplication around middle gray</li>
+      </ul>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
