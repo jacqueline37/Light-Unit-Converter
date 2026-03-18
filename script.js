@@ -21,11 +21,23 @@ const RESULT_CARD_IDS={
   beamAngle:"convCardBeamAngle"
 };
 
+const PRESETS={
+  moonlight:{unit:"lx",value:0.1},
+  room:{unit:"lx",value:100},
+  office:{unit:"lx",value:500},
+  overcast:{unit:"lx",value:10000},
+  sunlight:{unit:"lx",value:100000},
+  hdr1000:{unit:"nit",value:1000},
+  hdr400:{unit:"nit",value:400}
+};
+
 const globalModeNote=document.getElementById("globalModeNote");
 const globalModeRadios=document.querySelectorAll('input[name="globalMode"]');
 const tabButtons=document.querySelectorAll(".tab-btn");
 const tabPanels=document.querySelectorAll(".tab-panel");
+const tooltip=document.getElementById("tooltip");
 
+const convPresetSelect=document.getElementById("convPreset");
 const convValueInput=document.getElementById("convValue");
 const convUnitSelect=document.getElementById("convUnit");
 const convDistanceInput=document.getElementById("convDistance");
@@ -46,6 +58,20 @@ const convResultExposure=document.getElementById("convResultExposure");
 const convResultWm2=document.getElementById("convResultWm2");
 const convResultSr=document.getElementById("convResultSr");
 const convResultBeamAngle=document.getElementById("convResultBeamAngle");
+
+const camApertureInput=document.getElementById("camAperture");
+const camShutterPresetSelect=document.getElementById("camShutterPreset");
+const camShutterInput=document.getElementById("camShutterInput");
+const camIsoInput=document.getElementById("camIso");
+const camReflectanceInput=document.getElementById("camReflectance");
+const camCalcBtn=document.getElementById("camCalcBtn");
+const camResetBtn=document.getElementById("camResetBtn");
+const camResultEvIso=document.getElementById("camResultEvIso");
+const camResultEv100=document.getElementById("camResultEv100");
+const camResultLux=document.getElementById("camResultLux");
+const camResultNit=document.getElementById("camResultNit");
+const camResultStops=document.getElementById("camResultStops");
+const camResultExposure=document.getElementById("camResultExposure");
 
 const evApertureInput=document.getElementById("evAperture");
 const evShutterPresetSelect=document.getElementById("evShutterPreset");
@@ -96,6 +122,15 @@ const iesResultLux=document.getElementById("iesResultLux");
 const iesResultSr=document.getElementById("iesResultSr");
 const iesResultBeamAngle=document.getElementById("iesResultBeamAngle");
 
+const lambertValueInput=document.getElementById("lambertValue");
+const lambertUnitSelect=document.getElementById("lambertUnit");
+const lambertReflectanceInput=document.getElementById("lambertReflectance");
+const lambertCalcBtn=document.getElementById("lambertCalcBtn");
+const lambertResetBtn=document.getElementById("lambertResetBtn");
+const lambertResultLux=document.getElementById("lambertResultLux");
+const lambertResultNit=document.getElementById("lambertResultNit");
+const lambertResultApprox=document.getElementById("lambertResultApprox");
+
 const pbrPresetGrid=document.getElementById("pbrPresetGrid");
 const pbrResultName=document.getElementById("pbrResultName");
 const pbrResultLux=document.getElementById("pbrResultLux");
@@ -104,24 +139,12 @@ const pbrResultEv=document.getElementById("pbrResultEv");
 const pbrResultStops=document.getElementById("pbrResultStops");
 const pbrResultExposure=document.getElementById("pbrResultExposure");
 
-function getMode(){
-  return document.querySelector('input[name="globalMode"]:checked').value;
-}
-function isSimple(){
-  return getMode()==="simple";
-}
-function degToRad(deg){
-  return deg*Math.PI/180;
-}
-function radToDeg(rad){
-  return rad*180/Math.PI;
-}
-function clamp(value,min,max){
-  return Math.min(Math.max(value,min),max);
-}
-function isFinitePositive(value){
-  return Number.isFinite(value)&&value>0;
-}
+function getMode(){return document.querySelector('input[name="globalMode"]:checked').value;}
+function isSimple(){return getMode()==="simple";}
+function degToRad(deg){return deg*Math.PI/180;}
+function radToDeg(rad){return rad*180/Math.PI;}
+function clamp(value,min,max){return Math.min(Math.max(value,min),max);}
+function isFinitePositive(value){return Number.isFinite(value)&&value>0;}
 function formatNumber(value){
   if(!Number.isFinite(value)) return "—";
   const abs=Math.abs(value);
@@ -139,36 +162,16 @@ function steradianToBeamAngle(sr){
   const half=Math.acos(clamp(cosHalf,-1,1));
   return radToDeg(half*2);
 }
-function evToLux(ev){
-  return 2.5*Math.pow(2,ev);
-}
-function luxToEv(lux){
-  return lux>0?Math.log2(lux/2.5):NaN;
-}
-function stopsToExposure(stops){
-  return Math.pow(2,stops);
-}
-function exposureToStops(exposure){
-  return exposure>0?Math.log2(exposure):NaN;
-}
-function luxToWm2(lux,efficacy){
-  return efficacy>0?lux/efficacy:NaN;
-}
-function wm2ToLux(wm2,efficacy){
-  return wm2*efficacy;
-}
-function nitToLux(nit,reflectance){
-  return reflectance>0?(nit*Math.PI)/reflectance:NaN;
-}
-function luxToNit(lux,reflectance){
-  return (lux*reflectance)/Math.PI;
-}
-function ev100FromApertureShutter(aperture,shutter){
-  return aperture>0&&shutter>0?Math.log2((aperture*aperture)/shutter):NaN;
-}
-function evAtIsoFromEv100(ev100,iso){
-  return Number.isFinite(ev100)&&iso>0?ev100-Math.log2(iso/100):NaN;
-}
+function evToLux(ev){return 2.5*Math.pow(2,ev);}
+function luxToEv(lux){return lux>0?Math.log2(lux/2.5):NaN;}
+function stopsToExposure(stops){return Math.pow(2,stops);}
+function exposureToStops(exposure){return exposure>0?Math.log2(exposure):NaN;}
+function luxToWm2(lux,efficacy){return efficacy>0?lux/efficacy:NaN;}
+function wm2ToLux(wm2,efficacy){return wm2*efficacy;}
+function nitToLux(nit,reflectance){return reflectance>0?(nit*Math.PI)/reflectance:NaN;}
+function luxToNit(lux,reflectance){return (lux*reflectance)/Math.PI;}
+function ev100FromApertureShutter(aperture,shutter){return aperture>0&&shutter>0?Math.log2((aperture*aperture)/shutter):NaN;}
+function evAtIsoFromEv100(ev100,iso){return Number.isFinite(ev100)&&iso>0?ev100-Math.log2(iso/100):NaN;}
 function parseShutter(value){
   if(typeof value!=="string") return NaN;
   const text=value.trim().replace(/s$/i,"");
@@ -184,9 +187,7 @@ function parseShutter(value){
   const numericValue=parseFloat(text);
   return Number.isFinite(numericValue)?numericValue:NaN;
 }
-function showError(message){
-  alert(message);
-}
+function showError(message){alert(message);}
 function activateTab(tabName){
   tabButtons.forEach(btn=>btn.classList.toggle("active",btn.dataset.tab===tabName));
   tabPanels.forEach(panel=>panel.classList.toggle("active",panel.id===`tab-${tabName}`));
@@ -206,19 +207,36 @@ function highlightConverterResults(keys){
     if(el) el.classList.add("result-item-active");
   });
 }
+function showTooltip(text,x,y){
+  tooltip.textContent=text;
+  tooltip.style.left=`${x + 12}px`;
+  tooltip.style.top=`${y + 12}px`;
+  tooltip.classList.add("show");
+}
+function hideTooltip(){
+  tooltip.classList.remove("show");
+}
 function applySimpleDefaults(){
   convDistanceInput.value=String(DEFAULTS.distance);
   convSrInput.value=DEFAULTS.sr.toFixed(4);
   convBeamAngleInput.value=String(DEFAULTS.beamAngle);
   convReflectanceInput.value=String(DEFAULTS.reflectance);
   convEfficacyInput.value=String(DEFAULTS.efficacy);
+
+  camIsoInput.value=String(DEFAULTS.iso);
+  camReflectanceInput.value=String(DEFAULTS.reflectance);
+
   evIsoInput.value=String(DEFAULTS.iso);
   evReflectanceInput.value=String(DEFAULTS.reflectance);
+
   hdrReflectanceInput.value=String(DEFAULTS.reflectance);
   acesMiddleGrayInput.value=String(DEFAULTS.middleGray);
+
   iesDistanceInput.value=String(DEFAULTS.distance);
   iesSrInput.value=DEFAULTS.sr.toFixed(4);
   iesBeamAngleInput.value=String(DEFAULTS.beamAngle);
+
+  lambertReflectanceInput.value=String(DEFAULTS.reflectance);
 }
 function updateGlobalModeUI(){
   const simple=isSimple();
@@ -228,7 +246,8 @@ function updateGlobalModeUI(){
     : "Advanced mode lets you edit physical assumptions directly, including distance, solid angle, beam angle, reflectance, efficacy, ISO, and middle gray.";
   if(simple) applySimpleDefaults();
   updateConverterFieldVisibility();
-  updateShutterInputState();
+  updateShutterInputState(evShutterPresetSelect,evShutterInput);
+  updateShutterInputState(camShutterPresetSelect,camShutterInput);
 }
 function getNeededRoles(unit){
   const roleMap={
@@ -421,42 +440,90 @@ function convertMain(){
   }
 }
 function resetConverter(){
+  convPresetSelect.value="none";
   convValueInput.value="1000";
   convUnitSelect.value="lm";
   applySimpleDefaults();
   updateConverterFieldVisibility();
   convertMain();
 }
-
-function updateShutterInputState(){
-  const isCustom=evShutterPresetSelect.value==="custom";
-  evShutterInput.disabled=!isCustom;
+function applyConverterPreset(name){
+  const preset=PRESETS[name];
+  if(!preset) return;
+  convUnitSelect.value=preset.unit;
+  convValueInput.value=String(preset.value);
+  updateConverterFieldVisibility();
+  convertMain();
 }
+
+function updateShutterInputState(presetSelect,inputField){
+  const isCustom=presetSelect.value==="custom";
+  inputField.disabled=!isCustom;
+}
+function syncShutterPairFromPreset(presetSelect,inputField,calcFn){
+  if(presetSelect.value!=="custom"){
+    inputField.value=presetSelect.value;
+  }
+  updateShutterInputState(presetSelect,inputField);
+  calcFn();
+}
+function syncShutterPairFromInput(presetSelect,inputField){
+  if(inputField.value.trim()!==presetSelect.value){
+    presetSelect.value="custom";
+    updateShutterInputState(presetSelect,inputField);
+  }
+}
+function calculateCameraGeneric(apertureInput,shutterInput,isoInput,reflectanceInput,resultEvIso,resultEv100,resultLux,resultNit,resultStops,resultExposure){
+  const aperture=parseFloat(apertureInput.value);
+  const shutter=parseShutter(shutterInput.value);
+  const isoValue=isSimple()?DEFAULTS.iso:parseFloat(isoInput.value);
+  const reflectanceValue=isSimple()?DEFAULTS.reflectance:parseFloat(reflectanceInput.value);
+
+  if(!isFinitePositive(aperture)) throw new Error("Aperture must be greater than 0.");
+  if(!isFinitePositive(shutter)) throw new Error("Enter a valid shutter value, for example 1/60 or 0.0167.");
+  if(!isFinitePositive(isoValue)) throw new Error("ISO must be greater than 0.");
+  if(!Number.isFinite(reflectanceValue)||reflectanceValue<0||reflectanceValue>1) throw new Error("Reflectance must be between 0 and 1.");
+
+  const ev100Value=ev100FromApertureShutter(aperture,shutter);
+  const evAtIsoValue=evAtIsoFromEv100(ev100Value,isoValue);
+  const luxValue=evToLux(ev100Value);
+  const nitValue=luxToNit(luxValue,reflectanceValue);
+  const stopsValue=ev100Value;
+  const exposureValue=stopsToExposure(stopsValue);
+
+  resultEvIso.textContent=formatNumber(evAtIsoValue);
+  resultEv100.textContent=formatNumber(ev100Value);
+  resultLux.textContent=formatNumber(luxValue);
+  resultNit.textContent=formatNumber(nitValue);
+  resultStops.textContent=formatNumber(stopsValue);
+  resultExposure.textContent=formatNumber(exposureValue);
+}
+function calculateCamera(){
+  try{
+    calculateCameraGeneric(
+      camApertureInput,camShutterInput,camIsoInput,camReflectanceInput,
+      camResultEvIso,camResultEv100,camResultLux,camResultNit,camResultStops,camResultExposure
+    );
+  }catch(error){
+    showError(error.message);
+  }
+}
+function resetCamera(){
+  camApertureInput.value="8";
+  camShutterPresetSelect.value="1/60";
+  camShutterInput.value="1/60";
+  camIsoInput.value=String(DEFAULTS.iso);
+  camReflectanceInput.value=String(DEFAULTS.reflectance);
+  updateShutterInputState(camShutterPresetSelect,camShutterInput);
+  calculateCamera();
+}
+
 function calculateEV(){
   try{
-    const aperture=parseFloat(evApertureInput.value);
-    const shutter=parseShutter(evShutterInput.value);
-    const isoValue=isSimple()?DEFAULTS.iso:parseFloat(evIsoInput.value);
-    const reflectanceValue=isSimple()?DEFAULTS.reflectance:parseFloat(evReflectanceInput.value);
-
-    if(!isFinitePositive(aperture)) throw new Error("Aperture must be greater than 0.");
-    if(!isFinitePositive(shutter)) throw new Error("Enter a valid shutter value, for example 1/60 or 0.0167.");
-    if(!isFinitePositive(isoValue)) throw new Error("ISO must be greater than 0.");
-    if(!Number.isFinite(reflectanceValue)||reflectanceValue<0||reflectanceValue>1) throw new Error("Reflectance must be between 0 and 1.");
-
-    const ev100Value=ev100FromApertureShutter(aperture,shutter);
-    const evAtIsoValue=evAtIsoFromEv100(ev100Value,isoValue);
-    const luxValue=evToLux(ev100Value);
-    const nitValue=luxToNit(luxValue,reflectanceValue);
-    const stopsValue=ev100Value;
-    const exposureValue=stopsToExposure(stopsValue);
-
-    evResultEvIso.textContent=formatNumber(evAtIsoValue);
-    evResultEv100.textContent=formatNumber(ev100Value);
-    evResultLux.textContent=formatNumber(luxValue);
-    evResultNit.textContent=formatNumber(nitValue);
-    evResultStops.textContent=formatNumber(stopsValue);
-    evResultExposure.textContent=formatNumber(exposureValue);
+    calculateCameraGeneric(
+      evApertureInput,evShutterInput,evIsoInput,evReflectanceInput,
+      evResultEvIso,evResultEv100,evResultLux,evResultNit,evResultStops,evResultExposure
+    );
   }catch(error){
     showError(error.message);
   }
@@ -467,7 +534,7 @@ function resetEV(){
   evShutterInput.value="1/60";
   evIsoInput.value=String(DEFAULTS.iso);
   evReflectanceInput.value=String(DEFAULTS.reflectance);
-  updateShutterInputState();
+  updateShutterInputState(evShutterPresetSelect,evShutterInput);
   calculateEV();
 }
 
@@ -617,6 +684,41 @@ function resetIES(){
   calculateIES();
 }
 
+function calculateLambert(){
+  try{
+    const value=parseFloat(lambertValueInput.value);
+    const unit=lambertUnitSelect.value;
+    const reflectanceValue=parseFloat(lambertReflectanceInput.value);
+
+    if(!Number.isFinite(value)) throw new Error("Enter a valid numeric input value.");
+    if(!Number.isFinite(reflectanceValue)||reflectanceValue<0||reflectanceValue>1) throw new Error("Reflectance must be between 0 and 1.");
+
+    let luxValue=NaN;
+    let nitValue=NaN;
+
+    if(unit==="lx"){
+      luxValue=value;
+      nitValue=luxToNit(luxValue,reflectanceValue);
+    }else{
+      if(reflectanceValue===0) throw new Error("Reflectance cannot be 0 when converting from nit.");
+      nitValue=value;
+      luxValue=nitToLux(nitValue,reflectanceValue);
+    }
+
+    lambertResultLux.textContent=formatNumber(luxValue);
+    lambertResultNit.textContent=formatNumber(nitValue);
+    lambertResultApprox.textContent=`nit = lux × ${formatNumber(reflectanceValue)} / π`;
+  }catch(error){
+    showError(error.message);
+  }
+}
+function resetLambert(){
+  lambertValueInput.value="100";
+  lambertUnitSelect.value="lx";
+  lambertReflectanceInput.value=String(DEFAULTS.reflectance);
+  calculateLambert();
+}
+
 function applyPBRPreset(name,lux,reflectance){
   const nitValue=luxToNit(lux,reflectance);
   const evValue=luxToEv(lux);
@@ -632,10 +734,21 @@ function applyPBRPreset(name,lux,reflectance){
 }
 function runAllVisibleCalculations(){
   convertMain();
+  calculateCamera();
   calculateEV();
   calculateHDR();
   calculateACES();
   calculateIES();
+  calculateLambert();
+}
+function initTooltipHandlers(){
+  document.querySelectorAll(".info-btn").forEach(btn=>{
+    btn.addEventListener("mouseenter",e=>showTooltip(btn.dataset.tooltip||"",e.clientX,e.clientY));
+    btn.addEventListener("mousemove",e=>showTooltip(btn.dataset.tooltip||"",e.clientX,e.clientY));
+    btn.addEventListener("mouseleave",hideTooltip);
+    btn.addEventListener("focus",e=>showTooltip(btn.dataset.tooltip||"",e.clientX||0,e.clientY||0));
+    btn.addEventListener("blur",hideTooltip);
+  });
 }
 function initEventListeners(){
   tabButtons.forEach(button=>{
@@ -647,6 +760,14 @@ function initEventListeners(){
       updateGlobalModeUI();
       runAllVisibleCalculations();
     });
+  });
+
+  convPresetSelect.addEventListener("change",()=>{
+    if(convPresetSelect.value==="none"){
+      resetConverter();
+      return;
+    }
+    applyConverterPreset(convPresetSelect.value);
   });
 
   convConvertBtn.addEventListener("click",convertMain);
@@ -665,21 +786,15 @@ function initEventListeners(){
     if(Number.isFinite(srValue)&&srValue>0&&srValue<=2*Math.PI) convBeamAngleInput.value=steradianToBeamAngle(srValue).toFixed(4);
   });
 
+  camCalcBtn.addEventListener("click",calculateCamera);
+  camResetBtn.addEventListener("click",resetCamera);
+  camShutterPresetSelect.addEventListener("change",()=>syncShutterPairFromPreset(camShutterPresetSelect,camShutterInput,calculateCamera));
+  camShutterInput.addEventListener("input",()=>syncShutterPairFromInput(camShutterPresetSelect,camShutterInput));
+
   evCalcBtn.addEventListener("click",calculateEV);
   evResetBtn.addEventListener("click",resetEV);
-  evShutterPresetSelect.addEventListener("change",()=>{
-    if(evShutterPresetSelect.value!=="custom"){
-      evShutterInput.value=evShutterPresetSelect.value;
-    }
-    updateShutterInputState();
-    calculateEV();
-  });
-  evShutterInput.addEventListener("input",()=>{
-    if(evShutterInput.value.trim()!==evShutterPresetSelect.value){
-      evShutterPresetSelect.value="custom";
-      updateShutterInputState();
-    }
-  });
+  evShutterPresetSelect.addEventListener("change",()=>syncShutterPairFromPreset(evShutterPresetSelect,evShutterInput,calculateEV));
+  evShutterInput.addEventListener("input",()=>syncShutterPairFromInput(evShutterPresetSelect,evShutterInput));
 
   hdrCalcBtn.addEventListener("click",calculateHDR);
   hdrResetBtn.addEventListener("click",resetHDR);
@@ -699,6 +814,9 @@ function initEventListeners(){
     if(Number.isFinite(srValue)&&srValue>0&&srValue<=2*Math.PI) iesBeamAngleInput.value=steradianToBeamAngle(srValue).toFixed(4);
   });
 
+  lambertCalcBtn.addEventListener("click",calculateLambert);
+  lambertResetBtn.addEventListener("click",resetLambert);
+
   pbrPresetGrid.addEventListener("click",event=>{
     const button=event.target.closest(".preset-btn");
     if(!button) return;
@@ -707,6 +825,8 @@ function initEventListeners(){
     const reflectance=parseFloat(button.dataset.rho||DEFAULTS.reflectance);
     applyPBRPreset(name,lux,reflectance);
   });
+
+  initTooltipHandlers();
 }
 function init(){
   applySimpleDefaults();
@@ -715,12 +835,15 @@ function init(){
   updateConverterFieldVisibility();
   initEventListeners();
   resetConverter();
+  resetCamera();
   resetEV();
   resetHDR();
   resetACES();
   resetIES();
+  resetLambert();
   applyPBRPreset("Room",100,DEFAULTS.reflectance);
-  updateShutterInputState();
+  updateShutterInputState(evShutterPresetSelect,evShutterInput);
+  updateShutterInputState(camShutterPresetSelect,camShutterInput);
 }
 
 window.addEventListener("load",init);
