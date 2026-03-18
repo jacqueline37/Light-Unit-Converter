@@ -424,6 +424,7 @@ function resetEV(){
   evShutterInput.value="1/60";
   evIsoInput.value=String(DEFAULTS.iso);
   evReflectanceInput.value=String(DEFAULTS.reflectance);
+  updateShutterInputState();
   calculateEV();
 }
 
@@ -623,10 +624,11 @@ function initEventListeners(){
   evCalcBtn.addEventListener("click",calculateEV);
   evResetBtn.addEventListener("click",resetEV);
   evShutterPresetSelect.addEventListener("change",()=>{
-    if(evShutterPresetSelect.value!=="custom"){
-      evShutterInput.value=evShutterPresetSelect.value;
-      calculateEV();
-    }
+  if(evShutterPresetSelect.value!=="custom"){
+    evShutterInput.value=evShutterPresetSelect.value;
+  }
+  updateShutterInputState();
+  calculateEV();
   });
   evShutterInput.addEventListener("input",()=>{
     if(evShutterInput.value.trim()!==evShutterPresetSelect.value){
@@ -673,6 +675,7 @@ function init(){
   resetACES();
   resetIES();
   applyPBRPreset("Room",100,DEFAULTS.reflectance);
+  updateShutterInputState();
 }
 
 window.addEventListener("load",init);
