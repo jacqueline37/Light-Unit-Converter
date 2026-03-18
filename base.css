@@ -1,0 +1,23 @@
+*{box-sizing:border-box;}
+:root{
+  --bg:#0f1115;
+  --bg2:#141a26;
+  --panel:rgba(23,26,33,.94);
+  --panel2:#1d2431;
+  --text:#edf2fb;
+  --muted:#aab5ca;
+  --accent:#7aa2ff;
+  --accent2:#9ab9ff;
+  --border:#2c3446;
+  --shadow:0 10px 30px rgba(0,0,0,.28);
+}
+html,body{
+  margin:0;
+  padding:0;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  color:var(--text);
+  font-family:Inter,"Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+}
+button,input,select{
+  font:inherit;
+}
