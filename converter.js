@@ -133,11 +133,10 @@ window.ConverterModule={
 
   reset(){
     const d=window.AppDom;
-    const ui=window.AppUI;
     d.convPresetSelect.value="none";
     d.convValueInput.value="1000";
     d.convUnitSelect.value="lm";
-    ui.applySimpleDefaults();
+    window.AppUI.applySimpleDefaults();
     this.updateFieldVisibility();
     this.convert();
   },
