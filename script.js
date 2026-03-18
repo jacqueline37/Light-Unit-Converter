@@ -1,167 +1,152 @@
-const inputValue = document.getElementById("inputValue");
-const inputUnit = document.getElementById("inputUnit");
-const distance = document.getElementById("distance");
-const beamAngle = document.getElementById("beamAngle");
-const reflectance = document.getElementById("reflectance");
-
-const resultLm = document.getElementById("resultLm");
-const resultCd = document.getElementById("resultCd");
-const resultLx = document.getElementById("resultLx");
-const resultNit = document.getElementById("resultNit");
-const resultEv = document.getElementById("resultEv");
-
-const convertBtn = document.getElementById("convertBtn");
-const resetBtn = document.getElementById("resetBtn");
-
-function degToRad(deg) {
-  return (deg * Math.PI) / 180;
+*{box-sizing:border-box;}
+:root{
+  --bg:#0f1115;
+  --bg2:#131823;
+  --panel:rgba(23,26,33,.94);
+  --panel2:#1d2330;
+  --text:#edf2fb;
+  --muted:#aab5ca;
+  --accent:#7aa2ff;
+  --accent2:#9ebcff;
+  --border:#2c3446;
+  --shadow:0 10px 30px rgba(0,0,0,.28);
 }
-
-function formatNumber(value) {
-  if (!Number.isFinite(value)) return "-";
-  if (Math.abs(value) >= 100000 || (Math.abs(value) > 0 && Math.abs(value) < 0.001)) {
-    return value.toExponential(4);
+html,body{
+  margin:0;
+  padding:0;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  color:var(--text);
+  font-family:Inter,"Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.container{
+  width:min(980px,calc(100% - 32px));
+  margin:40px auto;
+}
+.hero{
+  margin-bottom:20px;
+}
+.hero h1{
+  margin:0 0 8px;
+  font-size:clamp(2rem,4vw,3rem);
+  line-height:1.1;
+}
+.subtitle{
+  margin:0;
+  color:var(--muted);
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:24px;
+  margin-bottom:18px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(10px);
+}
+.card h2{
+  margin:0 0 16px;
+  font-size:1.15rem;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.field label{
+  color:var(--muted);
+  font-size:.95rem;
+}
+.field input,.field select{
+  width:100%;
+  padding:12px 14px;
+  background:var(--panel2);
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:12px;
+  font-size:1rem;
+  outline:none;
+}
+.field input:focus,.field select:focus{
+  border-color:var(--accent);
+}
+.actions{
+  display:flex;
+  gap:12px;
+  margin-top:18px;
+}
+button{
+  border:none;
+  border-radius:12px;
+  padding:12px 18px;
+  background:var(--accent);
+  color:#0e1420;
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:.18s ease;
+}
+button:hover{
+  background:var(--accent2);
+  transform:translateY(-1px);
+}
+button.secondary{
+  background:transparent;
+  color:var(--text);
+  border:1px solid var(--border);
+}
+button.secondary:hover{
+  background:rgba(255,255,255,.04);
+}
+.results{
+  display:grid;
+  gap:12px;
+}
+.result-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  padding:14px 16px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:var(--panel2);
+}
+.result-label{
+  color:var(--muted);
+}
+.result-value{
+  font-size:1.05rem;
+  font-weight:700;
+  text-align:right;
+  word-break:break-word;
+}
+.note-card ul{
+  margin:0;
+  padding-left:20px;
+  color:var(--muted);
+  line-height:1.7;
+}
+@media (max-width:720px){
+  .container{
+    margin:24px auto;
   }
-  return Number(value.toFixed(4)).toString();
-}
-
-/**
- * Beam angle から立体角を近似
- * cone solid angle: Ω = 2π(1 - cos(θ/2))
- */
-function beamAngleToSteradian(angleDeg) {
-  const safeAngle = Math.max(0.001, Math.min(angleDeg, 179.999));
-  const halfRad = degToRad(safeAngle / 2);
-  return 2 * Math.PI * (1 - Math.cos(halfRad));
-}
-
-/**
- * 簡易 EV ↔ lx
- * 近似式: lux ≒ 2.5 * 2^EV
- */
-function evToLux(ev) {
-  return 2.5 * Math.pow(2, ev);
-}
-
-function luxToEv(lux) {
-  if (lux <= 0) return NaN;
-  return Math.log2(lux / 2.5);
-}
-
-function setResults({ lm, cd, lx, nit, ev }) {
-  resultLm.textContent = formatNumber(lm);
-  resultCd.textContent = formatNumber(cd);
-  resultLx.textContent = formatNumber(lx);
-  resultNit.textContent = formatNumber(nit);
-  resultEv.textContent = formatNumber(ev);
-}
-
-function convert() {
-  const value = parseFloat(inputValue.value);
-  const unit = inputUnit.value;
-  const dist = parseFloat(distance.value);
-  const angle = parseFloat(beamAngle.value);
-  const rho = parseFloat(reflectance.value);
-
-  if (!Number.isFinite(value)) {
-    alert("Input Value を正しく入力してください。");
-    return;
+  .card{
+    padding:18px;
   }
-
-  if (!Number.isFinite(dist) || dist <= 0) {
-    alert("Distance は 0 より大きい値にしてください。");
-    return;
+  .grid{
+    grid-template-columns:1fr;
   }
-
-  if (!Number.isFinite(angle) || angle <= 0 || angle >= 180) {
-    alert("Beam Angle は 0 より大きく 180 未満にしてください。");
-    return;
+  .result-item{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:6px;
   }
-
-  if (!Number.isFinite(rho) || rho < 0 || rho > 1) {
-    alert("Reflectance は 0〜1 の範囲で入力してください。");
-    return;
+  .result-value{
+    text-align:left;
   }
-
-  const omega = beamAngleToSteradian(angle);
-
-  let lm = NaN;
-  let cd = NaN;
-  let lx = NaN;
-  let nit = NaN;
-  let ev = NaN;
-
-  switch (unit) {
-    case "lm": {
-      lm = value;
-      cd = lm / omega;
-      lx = cd / (dist * dist);
-      nit = (lx * rho) / Math.PI;
-      ev = luxToEv(lx);
-      break;
-    }
-
-    case "cd": {
-      cd = value;
-      lm = cd * omega;
-      lx = cd / (dist * dist);
-      nit = (lx * rho) / Math.PI;
-      ev = luxToEv(lx);
-      break;
-    }
-
-    case "lx": {
-      lx = value;
-      cd = lx * dist * dist;
-      lm = cd * omega;
-      nit = (lx * rho) / Math.PI;
-      ev = luxToEv(lx);
-      break;
-    }
-
-    case "nit": {
-      nit = value;
-      lx = (nit * Math.PI) / rho;
-      cd = lx * dist * dist;
-      lm = cd * omega;
-      ev = luxToEv(lx);
-      break;
-    }
-
-    case "ev": {
-      ev = value;
-      lx = evToLux(ev);
-      cd = lx * dist * dist;
-      lm = cd * omega;
-      nit = (lx * rho) / Math.PI;
-      break;
-    }
-
-    default:
-      alert("未対応の単位です。");
-      return;
-  }
-
-  setResults({ lm, cd, lx, nit, ev });
 }
-
-function resetFields() {
-  inputValue.value = 1000;
-  inputUnit.value = "lm";
-  distance.value = 1;
-  beamAngle.value = 120;
-  reflectance.value = 0.8;
-
-  setResults({
-    lm: NaN,
-    cd: NaN,
-    lx: NaN,
-    nit: NaN,
-    ev: NaN
-  });
-}
-
-convertBtn.addEventListener("click", convert);
-resetBtn.addEventListener("click", resetFields);
-
-window.addEventListener("load", convert);
