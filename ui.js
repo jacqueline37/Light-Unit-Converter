@@ -119,7 +119,6 @@ window.AppUI={
   },
 
   updateGlobalModeUI(){
-    const {DEFAULTS}=window.AppData;
     const d=window.AppDom;
     const simple=window.AppUtils.isSimple();
 
