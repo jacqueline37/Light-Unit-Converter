@@ -1,29 +1,10 @@
 # Light Utility Suite
 
-Light Utility Suite is a static web tool for converting and estimating lighting-related units used in CG, photography, HDR, ACES, PBR, and photometric workflows.
+Light Utility Suite is a static web tool for converting and estimating lighting-related values used in CG, photography, HDR, ACES, PBR, and photometric workflows.
 
-This tool allows approximate conversion between:
+The tool focuses on conversions that can be performed consistently using simple geometric and photometric assumptions.
 
-- lumen (lm)
-- candela (cd)
-- lux (lx)
-- nit (cd/m²)
-- EV / EV100
-- stops
-- exposure multiplier
-- W/m²
-- solid angle (sr)
-
-It also provides helpers for:
-
-- camera exposure
-- HDR brightness
-- ACES scene linear values
-- IES-style light estimation
-- Lambert reflectance approximation
-- PBR lighting reference presets
-
-The tool runs entirely in the browser and does not use storage.
+It runs entirely in the browser and does not store any user data.
 
 ---
 
@@ -42,6 +23,24 @@ It is not a physical measurement tool, but a practical estimation utility.
 
 ---
 
+## Supported quantities
+
+The tool works with the following values:
+
+- lumen (lm)
+- candela (cd)
+- lux (lx)
+- luminance (cd/m², nit)
+- EV / EV100
+- stops
+- exposure multiplier
+- solid angle (sr)
+- beam angle (deg)
+
+Conversions are only performed when physically consistent assumptions are available.
+
+---
+
 ## Features
 
 ### Converter
@@ -52,22 +51,20 @@ Convert between:
 - cd
 - lx
 - nit
-- EV100
 - stops
-- exposure
-- W/m²
-- sr
+- exposure multiplier
+- solid angle (sr)
+- beam angle (deg)
 
-Conversion uses geometric assumptions when needed.
-
-Requires:
+Conversions may require:
 
 - distance
 - solid angle
 - reflectance
-- efficacy
 
 Preset values are provided.
+
+The converter uses geometric and photometric assumptions when needed.
 
 ---
 
@@ -86,19 +83,14 @@ Outputs:
 
 - EV at ISO
 - EV100
-- lux
-- nit
+- illuminance (lx)
+- luminance (nit)
 - stops
 - exposure multiplier
 
-Shutter supports:
+Shutter supports presets and custom values.
 
-- 1/60
-- 1/125
-- 0.0167
-- 0.008
-
-Preset shutter values are available.
+Uses standard photographic exposure equations.
 
 ---
 
@@ -112,11 +104,11 @@ EV100 = log2(N² / t)
 
 EVISO = EV100 − log2(ISO / 100)
 
-Approximate lux relation:
+Approximate illuminance relation:
 
 lx ≈ 2.5 × 2^EV
 
-This is a practical approximation.
+This relation is based on photographic exposure calibration and is intended as a practical approximation.
 
 ---
 
@@ -135,6 +127,8 @@ Useful for:
 - HDR displays
 - tone mapping
 - brightness comparison
+
+Values are approximate and depend on assumptions.
 
 ---
 
@@ -158,6 +152,8 @@ Outputs:
 Default middle gray:
 
 0.18
+
+Intended for ACES / scene-linear rendering workflows.
 
 ---
 
@@ -184,7 +180,7 @@ Uses:
 cd = lm / sr  
 lx = cd / d²
 
-Assumes center direction.
+Assumes center direction and uniform beam.
 
 ---
 
@@ -196,11 +192,11 @@ Uses:
 
 nit = lx × reflectance / π
 
-Assumes ideal Lambert surface.
+Assumes ideal Lambertian surface.
 
 Not valid for:
 
-- specular surfaces
+- specular materials
 - metal
 - emissive displays
 - complex BRDF
@@ -211,29 +207,30 @@ Use as approximation only.
 
 ### PBR Reference
 
-Lighting presets:
+Lighting presets for scene setup.
+
+Examples:
 
 - Moonlight
-- Dark Interior
+- Dark interior
 - Room
 - Office
 - Overcast
 - Sunlight
 - HDR display
 
-Useful for scene setup.
+Useful for rough lighting reference in CG scenes.
 
 ---
 
 ## Simple / Advanced mode
 
-Simple mode uses defaults:
+Simple mode uses recommended defaults:
 
 - distance = 1 m
 - sr = 2π
 - beam angle = 180°
 - reflectance = 0.8
-- efficacy = 683 lm/W
 - ISO = 100
 - middle gray = 0.18
 
@@ -241,24 +238,51 @@ Advanced mode allows editing all parameters.
 
 ---
 
+## Assumptions
+
+All conversions assume idealized physical models.
+
+Examples:
+
+- lm ↔ cd uses solid angle
+- cd ↔ lx assumes point source and normal incidence
+- lx ↔ nit assumes Lambertian reflection
+- beam angle ↔ sr assumes uniform circular cone
+- EV relations use photographic exposure calibration
+
+Results depend on these assumptions.
+
+---
+
 ## Notes
 
 Some conversions require geometric or photometric assumptions.
 
-lm → cd requires solid angle (sr)  
-cd → lx requires distance (m)  
-lx → nit assumes Lambert diffuse reflection  
-lx → W/m² requires luminous efficacy  
-EV → lx uses a practical approximation
+lm → cd requires solid angle  
+cd → lx requires distance  
+lx → nit assumes diffuse reflection  
+EV → lx uses photographic calibration  
 
-This tool is intended for practical lighting estimation in CG, photography, and rendering workflows.
+Values should be used as reference only.
 
-Results may vary depending on assumptions and input parameters.  
-Values should be used as reference only, not as precise physical measurements.
+This tool is intended for practical lighting estimation in:
 
-Do not rely on the results for scientific measurement, calibration, or safety-critical use.
+- CG
+- rendering
+- photography
+- HDR workflows
 
-This tool does not store any user data and runs entirely in the browser.
+It is not intended for scientific measurement, calibration, or safety-critical use.
+
+---
+
+## Privacy
+
+This tool runs entirely in the browser.
+
+No data is stored.
+
+No network requests are made.
 
 ---
 
