@@ -1,13 +1,13 @@
 *{box-sizing:border-box;}
 :root{
   --bg:#0f1115;
-  --bg2:#131823;
+  --bg2:#141a26;
   --panel:rgba(23,26,33,.94);
-  --panel2:#1d2330;
+  --panel2:#1d2431;
   --text:#edf2fb;
   --muted:#aab5ca;
   --accent:#7aa2ff;
-  --accent2:#9ebcff;
+  --accent2:#9ab9ff;
   --border:#2c3446;
   --shadow:0 10px 30px rgba(0,0,0,.28);
 }
@@ -19,7 +19,7 @@ html,body{
   font-family:Inter,"Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
 }
 .container{
-  width:min(980px,calc(100% - 32px));
+  width:min(1080px,calc(100% - 32px));
   margin:40px auto;
 }
 .hero{
@@ -43,9 +43,66 @@ html,body{
   box-shadow:var(--shadow);
   backdrop-filter:blur(10px);
 }
+.top-card{
+  margin-bottom:14px;
+}
 .card h2{
   margin:0 0 16px;
   font-size:1.15rem;
+}
+.mode-row,.tabs,.actions,.defaults-list,.preset-grid{
+  display:flex;
+  flex-wrap:wrap;
+}
+.mode-row,.actions,.preset-grid{
+  gap:12px;
+}
+.tabs{
+  gap:10px;
+  margin-bottom:18px;
+}
+.tab-btn{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 16px;
+  background:var(--panel2);
+  color:var(--text);
+  cursor:pointer;
+  font-size:.98rem;
+  font-weight:700;
+  transition:.18s ease;
+}
+.tab-btn:hover{
+  border-color:var(--accent);
+}
+.tab-btn.active{
+  background:var(--accent);
+  color:#0e1420;
+  border-color:transparent;
+}
+.tab-panel{
+  display:none;
+}
+.tab-panel.active{
+  display:block;
+}
+.radio-option{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 14px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--panel2);
+  cursor:pointer;
+}
+.radio-option input{
+  margin:0;
+}
+.mode-note{
+  margin:14px 0 0;
+  color:var(--muted);
+  line-height:1.6;
 }
 .grid{
   display:grid;
@@ -74,9 +131,25 @@ html,body{
 .field input:focus,.field select:focus{
   border-color:var(--accent);
 }
+.hidden{
+  display:none !important;
+}
+.defaults-box{
+  margin-top:18px;
+  padding:14px 16px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:var(--panel2);
+}
+.defaults-title{
+  font-weight:700;
+  margin-bottom:10px;
+}
+.defaults-list{
+  gap:10px 18px;
+  color:var(--muted);
+}
 .actions{
-  display:flex;
-  gap:12px;
   margin-top:18px;
 }
 button{
@@ -125,13 +198,25 @@ button.secondary:hover{
   text-align:right;
   word-break:break-word;
 }
+.preset-grid{
+  gap:10px;
+}
+.preset-btn{
+  background:var(--panel2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.preset-btn:hover{
+  background:rgba(255,255,255,.06);
+  border-color:var(--accent);
+}
 .note-card ul{
   margin:0;
   padding-left:20px;
   color:var(--muted);
   line-height:1.7;
 }
-@media (max-width:720px){
+@media (max-width:760px){
   .container{
     margin:24px auto;
   }
