@@ -201,6 +201,7 @@ function updateGlobalModeUI(){
     : "Advanced mode lets you edit physical assumptions directly, including distance, solid angle, beam angle, reflectance, efficacy, ISO, and middle gray.";
   if(simple) applySimpleDefaults();
   updateConverterFieldVisibility();
+  updateShutterInputState();
 }
 function getNeededRoles(unit){
   const roleMap={
@@ -389,6 +390,10 @@ function resetConverter(){
   convertMain();
 }
 
+function updateShutterInputState(){
+  const isCustom=evShutterPresetSelect.value==="custom";
+  evShutterInput.disabled=!isCustom;
+}
 function calculateEV(){
   try{
     const aperture=parseFloat(evApertureInput.value);
@@ -624,15 +629,16 @@ function initEventListeners(){
   evCalcBtn.addEventListener("click",calculateEV);
   evResetBtn.addEventListener("click",resetEV);
   evShutterPresetSelect.addEventListener("change",()=>{
-  if(evShutterPresetSelect.value!=="custom"){
-    evShutterInput.value=evShutterPresetSelect.value;
-  }
-  updateShutterInputState();
-  calculateEV();
+    if(evShutterPresetSelect.value!=="custom"){
+      evShutterInput.value=evShutterPresetSelect.value;
+    }
+    updateShutterInputState();
+    calculateEV();
   });
   evShutterInput.addEventListener("input",()=>{
     if(evShutterInput.value.trim()!==evShutterPresetSelect.value){
       evShutterPresetSelect.value="custom";
+      updateShutterInputState();
     }
   });
 
