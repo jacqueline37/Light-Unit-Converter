@@ -7,7 +7,7 @@ I made this mainly as a personal reference while working with lighting in render
 The tool runs entirely in the browser and does not store any data.
 
 Try online:
-[https://xxxxx.github.io/Light-Unit-Converter/](https://jacqueline37.github.io/Light-Unit-Converter/)
+[https://jacqueline37.github.io/Light-Unit-Converter/](https://jacqueline37.github.io/Light-Unit-Converter/)
 
 ---
 
