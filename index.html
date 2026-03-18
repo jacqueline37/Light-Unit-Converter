@@ -6,15 +6,6 @@
   <title>Light Utility Suite</title>
   <link rel="stylesheet" href="style.css">
 </head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GHPRV69Y23"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-GHPRV69Y23');
-</script>
 <body>
   <main class="container">
     <header class="hero">
@@ -27,12 +18,12 @@
         <label class="radio-option"><input type="radio" name="globalMode" value="simple" checked><span>Simple (Recommended Defaults)</span></label>
         <label class="radio-option"><input type="radio" name="globalMode" value="advanced"><span>Advanced (Physical Parameters)</span></label>
       </div>
-      <p class="mode-note" id="globalModeNote">Simple mode uses recommended defaults: distance = 1m, sr = 2π, beam angle = 180°, reflectance = 0.8, efficacy = 683 lm/W, ISO = 100.</p>
+      <p class="mode-note" id="globalModeNote">Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, efficacy = 683 lm/W, ISO = 100.</p>
       <div class="defaults-box">
         <div class="defaults-title">Recommended defaults</div>
         <div class="defaults-list">
           <span>Distance: <strong>1 m</strong></span>
-          <span>sr: <strong>2π</strong></span>
+          <span>Solid Angle: <strong>2π sr</strong></span>
           <span>Beam Angle: <strong>180°</strong></span>
           <span>Reflectance: <strong>0.8</strong></span>
           <span>Efficacy: <strong>683 lm/W</strong></span>
@@ -60,17 +51,17 @@
             <input id="convValue" type="number" step="any" value="1000">
           </div>
           <div class="field">
-            <label for="convUnit">Unit</label>
+            <label for="convUnit">Input Unit</label>
             <select id="convUnit">
-              <option value="lm">Lumen (lm)</option>
-              <option value="cd">Candela (cd)</option>
-              <option value="lx">Lux (lx)</option>
-              <option value="nit">Nit (cd/m²)</option>
-              <option value="ev">EV</option>
+              <option value="lm">Luminous Flux (lm)</option>
+              <option value="cd">Luminous Intensity (cd)</option>
+              <option value="lx">Illuminance (lx)</option>
+              <option value="nit">Luminance (cd/m², nit)</option>
+              <option value="ev">EV100</option>
               <option value="stops">Stops</option>
-              <option value="exposure">Exposure</option>
-              <option value="wm2">W/m²</option>
-              <option value="sr">Steradian (sr)</option>
+              <option value="exposure">Exposure Multiplier</option>
+              <option value="wm2">Irradiance (W/m²)</option>
+              <option value="sr">Solid Angle (sr)</option>
             </select>
           </div>
 
@@ -104,16 +95,16 @@
       <div class="card">
         <h2>Converter Results</h2>
         <div class="results">
-          <div class="result-item"><span class="result-label">Lumen (lm)</span><span class="result-value" id="convResultLm">-</span></div>
-          <div class="result-item"><span class="result-label">Candela (cd)</span><span class="result-value" id="convResultCd">-</span></div>
-          <div class="result-item"><span class="result-label">Lux (lx)</span><span class="result-value" id="convResultLx">-</span></div>
-          <div class="result-item"><span class="result-label">Nit (cd/m²)</span><span class="result-value" id="convResultNit">-</span></div>
-          <div class="result-item"><span class="result-label">EV</span><span class="result-value" id="convResultEv">-</span></div>
-          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="convResultStops">-</span></div>
-          <div class="result-item"><span class="result-label">Exposure</span><span class="result-value" id="convResultExposure">-</span></div>
-          <div class="result-item"><span class="result-label">W/m²</span><span class="result-value" id="convResultWm2">-</span></div>
-          <div class="result-item"><span class="result-label">Steradian (sr)</span><span class="result-value" id="convResultSr">-</span></div>
-          <div class="result-item"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="convResultBeamAngle">-</span></div>
+          <div class="result-item" id="convCardLm"><span class="result-label">Luminous Flux (lm)</span><span class="result-value" id="convResultLm">-</span></div>
+          <div class="result-item" id="convCardCd"><span class="result-label">Luminous Intensity (cd)</span><span class="result-value" id="convResultCd">-</span></div>
+          <div class="result-item" id="convCardLx"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="convResultLx">-</span></div>
+          <div class="result-item" id="convCardNit"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="convResultNit">-</span></div>
+          <div class="result-item" id="convCardEv"><span class="result-label">EV100</span><span class="result-value" id="convResultEv">-</span></div>
+          <div class="result-item" id="convCardStops"><span class="result-label">Stops</span><span class="result-value" id="convResultStops">-</span></div>
+          <div class="result-item" id="convCardExposure"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="convResultExposure">-</span></div>
+          <div class="result-item" id="convCardWm2"><span class="result-label">Irradiance (W/m²)</span><span class="result-value" id="convResultWm2">-</span></div>
+          <div class="result-item" id="convCardSr"><span class="result-label">Solid Angle (sr)</span><span class="result-value" id="convResultSr">-</span></div>
+          <div class="result-item" id="convCardBeamAngle"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="convResultBeamAngle">-</span></div>
         </div>
       </div>
     </section>
@@ -123,7 +114,7 @@
         <h2>EV Calculator</h2>
         <div class="grid">
           <div class="field">
-            <label for="evAperture">Aperture (f)</label>
+            <label for="evAperture">Aperture (f-number)</label>
             <input id="evAperture" type="number" step="any" value="8">
           </div>
           <div class="field">
@@ -172,10 +163,10 @@
         <div class="results">
           <div class="result-item"><span class="result-label">EV at ISO</span><span class="result-value" id="evResultEvIso">-</span></div>
           <div class="result-item"><span class="result-label">EV100</span><span class="result-value" id="evResultEv100">-</span></div>
-          <div class="result-item"><span class="result-label">Lux</span><span class="result-value" id="evResultLux">-</span></div>
-          <div class="result-item"><span class="result-label">Nit (cd/m²)</span><span class="result-value" id="evResultNit">-</span></div>
+          <div class="result-item"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="evResultLux">-</span></div>
+          <div class="result-item"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="evResultNit">-</span></div>
           <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="evResultStops">-</span></div>
-          <div class="result-item"><span class="result-label">Exposure</span><span class="result-value" id="evResultExposure">-</span></div>
+          <div class="result-item"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="evResultExposure">-</span></div>
         </div>
       </div>
     </section>
@@ -191,11 +182,11 @@
           <div class="field">
             <label for="hdrUnit">Input Type</label>
             <select id="hdrUnit">
-              <option value="nit">Nit</option>
-              <option value="ev">EV</option>
+              <option value="nit">Luminance (cd/m², nit)</option>
+              <option value="ev">EV100</option>
               <option value="stops">Stops</option>
-              <option value="exposure">Exposure</option>
-              <option value="lx">Lux</option>
+              <option value="exposure">Exposure Multiplier</option>
+              <option value="lx">Illuminance (lx)</option>
             </select>
           </div>
           <div class="field adv">
@@ -212,11 +203,11 @@
       <div class="card">
         <h2>HDR Results</h2>
         <div class="results">
-          <div class="result-item"><span class="result-label">Nit</span><span class="result-value" id="hdrResultNit">-</span></div>
-          <div class="result-item"><span class="result-label">Lux</span><span class="result-value" id="hdrResultLux">-</span></div>
-          <div class="result-item"><span class="result-label">EV</span><span class="result-value" id="hdrResultEv">-</span></div>
+          <div class="result-item"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="hdrResultNit">-</span></div>
+          <div class="result-item"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="hdrResultLux">-</span></div>
+          <div class="result-item"><span class="result-label">EV100</span><span class="result-value" id="hdrResultEv">-</span></div>
           <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="hdrResultStops">-</span></div>
-          <div class="result-item"><span class="result-label">Exposure</span><span class="result-value" id="hdrResultExposure">-</span></div>
+          <div class="result-item"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="hdrResultExposure">-</span></div>
         </div>
       </div>
     </section>
@@ -262,7 +253,7 @@
         <h2>IES Helper</h2>
         <div class="grid">
           <div class="field">
-            <label for="iesLm">Lumen (lm)</label>
+            <label for="iesLm">Luminous Flux (lm)</label>
             <input id="iesLm" type="number" step="any" value="1000">
           </div>
           <div class="field">
@@ -287,9 +278,9 @@
       <div class="card">
         <h2>IES Results</h2>
         <div class="results">
-          <div class="result-item"><span class="result-label">Lumen (lm)</span><span class="result-value" id="iesResultLm">-</span></div>
-          <div class="result-item"><span class="result-label">Candela (cd)</span><span class="result-value" id="iesResultCd">-</span></div>
-          <div class="result-item"><span class="result-label">Lux at Distance</span><span class="result-value" id="iesResultLux">-</span></div>
+          <div class="result-item"><span class="result-label">Luminous Flux (lm)</span><span class="result-value" id="iesResultLm">-</span></div>
+          <div class="result-item"><span class="result-label">Luminous Intensity (cd)</span><span class="result-value" id="iesResultCd">-</span></div>
+          <div class="result-item"><span class="result-label">Illuminance at Distance (lx)</span><span class="result-value" id="iesResultLux">-</span></div>
           <div class="result-item"><span class="result-label">Solid Angle (sr)</span><span class="result-value" id="iesResultSr">-</span></div>
           <div class="result-item"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="iesResultBeamAngle">-</span></div>
         </div>
@@ -313,11 +304,11 @@
         <h2>Preset Result</h2>
         <div class="results">
           <div class="result-item"><span class="result-label">Preset</span><span class="result-value" id="pbrResultName">-</span></div>
-          <div class="result-item"><span class="result-label">Lux</span><span class="result-value" id="pbrResultLux">-</span></div>
-          <div class="result-item"><span class="result-label">Nit</span><span class="result-value" id="pbrResultNit">-</span></div>
-          <div class="result-item"><span class="result-label">EV</span><span class="result-value" id="pbrResultEv">-</span></div>
+          <div class="result-item"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="pbrResultLux">-</span></div>
+          <div class="result-item"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="pbrResultNit">-</span></div>
+          <div class="result-item"><span class="result-label">EV100</span><span class="result-value" id="pbrResultEv">-</span></div>
           <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="pbrResultStops">-</span></div>
-          <div class="result-item"><span class="result-label">Exposure</span><span class="result-value" id="pbrResultExposure">-</span></div>
+          <div class="result-item"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="pbrResultExposure">-</span></div>
         </div>
       </div>
     </section>
