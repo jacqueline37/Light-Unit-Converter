@@ -100,7 +100,6 @@ window.AppUI={
     d.convSrInput.value=DEFAULTS.sr.toFixed(4);
     d.convBeamAngleInput.value=String(DEFAULTS.beamAngle);
     d.convReflectanceInput.value=String(DEFAULTS.reflectance);
-    d.convEfficacyInput.value=String(DEFAULTS.efficacy);
 
     d.camIsoInput.value=String(DEFAULTS.iso);
     d.camReflectanceInput.value=String(DEFAULTS.reflectance);
@@ -124,8 +123,8 @@ window.AppUI={
 
     document.querySelectorAll(".adv").forEach(el=>el.classList.toggle("hidden",simple));
     d.globalModeNote.textContent=simple
-      ? "Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, efficacy = 683 lm/W, ISO = 100."
-      : "Advanced mode lets you edit physical assumptions directly, including distance, solid angle, beam angle, reflectance, efficacy, ISO, and middle gray.";
+      ? "Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, ISO = 100."
+      : "Advanced mode lets you edit physical assumptions directly, including distance, solid angle, beam angle, reflectance, ISO, and middle gray.";
 
     if(simple) this.applySimpleDefaults();
 
