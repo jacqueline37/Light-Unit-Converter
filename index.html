@@ -22,7 +22,7 @@
   <main class="container">
     <header class="hero">
       <h1>Light Utility Suite</h1>
-      <p class="subtitle">Converter / Camera / EV / HDR / ACES / IES / Lambert / PBR Reference</p>
+      <p class="subtitle">Photometric / Camera / EV / HDR / ACES / IES / Lambert / PBR Reference</p>
     </header>
 
     <section class="card top-card">
@@ -86,10 +86,8 @@
                 <option value="cd">Luminous Intensity (cd)</option>
                 <option value="lx">Illuminance (lx)</option>
                 <option value="nit">Luminance (cd/m², nit)</option>
-                <option value="ev">EV100</option>
                 <option value="stops">Stops</option>
                 <option value="exposure">Exposure Multiplier</option>
-                <option value="wm2">Irradiance (W/m²)</option>
                 <option value="sr">Solid Angle (sr)</option>
               </select>
               <button class="info-btn" type="button" data-tooltip-key="convUnit">?</button>
@@ -150,10 +148,8 @@
           <div class="result-item" id="convCardCd"><span class="result-label">Luminous Intensity (cd)</span><span class="result-value" id="convResultCd">-</span></div>
           <div class="result-item" id="convCardLx"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="convResultLx">-</span></div>
           <div class="result-item" id="convCardNit"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="convResultNit">-</span></div>
-          <div class="result-item" id="convCardEv"><span class="result-label">EV100</span><span class="result-value" id="convResultEv">-</span></div>
           <div class="result-item" id="convCardStops"><span class="result-label">Stops</span><span class="result-value" id="convResultStops">-</span></div>
           <div class="result-item" id="convCardExposure"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="convResultExposure">-</span></div>
-          <div class="result-item" id="convCardWm2"><span class="result-label">Irradiance (W/m²)</span><span class="result-value" id="convResultWm2">-</span></div>
           <div class="result-item" id="convCardSr"><span class="result-label">Solid Angle (sr)</span><span class="result-value" id="convResultSr">-</span></div>
           <div class="result-item" id="convCardBeamAngle"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="convResultBeamAngle">-</span></div>
         </div>
@@ -425,9 +421,7 @@
         <li>lm ↔ cd: cd = lm / sr</li>
         <li>cd ↔ lx: lx = cd / d² (normal incidence)</li>
         <li>lx ↔ nit: nit = lx × reflectance / π (Lambert surface)</li>
-        <li>lx ↔ W/m²: lx = W/m² × efficacy</li>
-        <li>EV ↔ lx: lx ≒ 2.5 × 2^EV</li>
-        <li>Stops are treated as EV-equivalent relative exposure units</li>
+        <li>Stops are treated as relative exposure units</li>
         <li>Exposure multiplier = 2^stops</li>
         <li>Beam angle ↔ sr uses cone approximation</li>
         <li>EV calculator uses EV100 = log2(N²/t), then adjusts for ISO</li>
