@@ -9,13 +9,12 @@
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/utilities.css">
 </head>
-  <!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHPRV69Y23"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-GHPRV69Y23');
 </script>
 <body>
@@ -30,7 +29,7 @@
         <label class="radio-option"><input type="radio" name="globalMode" value="simple" checked><span>Simple (Recommended Defaults)</span></label>
         <label class="radio-option"><input type="radio" name="globalMode" value="advanced"><span>Advanced (Physical Parameters)</span></label>
       </div>
-      <p class="mode-note" id="globalModeNote">Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, efficacy = 683 lm/W, ISO = 100.</p>
+      <p class="mode-note" id="globalModeNote">Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, ISO = 100.</p>
       <div class="defaults-box">
         <div class="defaults-title">Recommended defaults</div>
         <div class="defaults-list">
@@ -38,7 +37,6 @@
           <span>Solid Angle: <strong>2π sr</strong></span>
           <span>Beam Angle: <strong>180°</strong></span>
           <span>Reflectance: <strong>0.8</strong></span>
-          <span>Efficacy: <strong>683 lm/W</strong></span>
           <span>ISO: <strong>100</strong></span>
           <span>Middle Gray: <strong>0.18 (18% gray)</strong></span>
         </div>
@@ -123,14 +121,6 @@
             <div class="label-with-help">
               <input id="convReflectance" type="number" step="any" min="0" max="1" value="0.8">
               <button class="info-btn" type="button" data-tooltip-key="reflectance">?</button>
-            </div>
-          </div>
-
-          <div class="field adv conv-param" data-roles="efficacy">
-            <label for="convEfficacy">Luminous Efficacy (lm/W)</label>
-            <div class="label-with-help">
-              <input id="convEfficacy" type="number" step="any" value="683">
-              <button class="info-btn" type="button" data-tooltip-key="efficacy">?</button>
             </div>
           </div>
         </div>
