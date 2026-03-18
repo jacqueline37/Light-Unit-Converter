@@ -35,7 +35,8 @@ const convResultSr=document.getElementById("convResultSr");
 const convResultBeamAngle=document.getElementById("convResultBeamAngle");
 
 const evApertureInput=document.getElementById("evAperture");
-const evShutterInput=document.getElementById("evShutter");
+const evShutterPresetSelect=document.getElementById("evShutterPreset");
+const evShutterInput=document.getElementById("evShutterInput");
 const evIsoInput=document.getElementById("evIso");
 const evReflectanceInput=document.getElementById("evReflectance");
 const evCalcBtn=document.getElementById("evCalcBtn");
@@ -152,8 +153,20 @@ function ev100FromApertureShutter(aperture,shutter){
 function evAtIsoFromEv100(ev100,iso){
   return Number.isFinite(ev100)&&iso>0?ev100-Math.log2(iso/100):NaN;
 }
-function ev100FromEvAtIso(evAtIso,iso){
-  return Number.isFinite(evAtIso)&&iso>0?evAtIso+Math.log2(iso/100):NaN;
+function parseShutter(value){
+  if(typeof value!=="string") return NaN;
+  const text=value.trim();
+  if(text.length===0) return NaN;
+  if(text.includes("/")){
+    const parts=text.split("/");
+    if(parts.length!==2) return NaN;
+    const numerator=parseFloat(parts[0]);
+    const denominator=parseFloat(parts[1]);
+    if(!Number.isFinite(numerator)||!Number.isFinite(denominator)||denominator===0) return NaN;
+    return numerator/denominator;
+  }
+  const numericValue=parseFloat(text);
+  return Number.isFinite(numericValue)?numericValue:NaN;
 }
 function showError(message){
   alert(message);
@@ -357,28 +370,13 @@ function convertMain(){
           convSrInput.value=Number(value).toFixed(4);
           convBeamAngleInput.value=steradianToBeamAngle(value).toFixed(4);
         }
-        setConverterResults({
-          lm:NaN,
-          cd:NaN,
-          lx:NaN,
-          nit:NaN,
-          ev:NaN,
-          stops:NaN,
-          exposure:NaN,
-          wm2:NaN,
-          sr:value,
-          beamAngle:steradianToBeamAngle(value)
-        });
+        setConverterResults({lm:NaN,cd:NaN,lx:NaN,nit:NaN,ev:NaN,stops:NaN,exposure:NaN,wm2:NaN,sr:value,beamAngle:steradianToBeamAngle(value)});
         return;
       default:
         throw new Error("未対応の単位です。");
     }
 
-    setConverterResults({
-      lm,cd,lx,nit,ev,stops,exposure,wm2,
-      sr:params.sr,
-      beamAngle:params.beamAngle
-    });
+    setConverterResults({lm,cd,lx,nit,ev,stops,exposure,wm2,sr:params.sr,beamAngle:params.beamAngle});
   }catch(error){
     showError(error.message);
   }
@@ -394,12 +392,12 @@ function resetConverter(){
 function calculateEV(){
   try{
     const aperture=parseFloat(evApertureInput.value);
-    const shutter=parseFloat(evShutterInput.value);
+    const shutter=parseShutter(evShutterInput.value);
     const isoValue=isSimple()?DEFAULTS.iso:parseFloat(evIsoInput.value);
     const reflectanceValue=isSimple()?DEFAULTS.reflectance:parseFloat(evReflectanceInput.value);
 
     if(!Number.isFinite(aperture)||aperture<=0) throw new Error("Aperture を正しく入力してください。");
-    if(!Number.isFinite(shutter)||shutter<=0) throw new Error("Shutter を正しく入力してください。");
+    if(!Number.isFinite(shutter)||shutter<=0) throw new Error("Shutter を正しく入力してください。例: 1/60");
     if(!Number.isFinite(isoValue)||isoValue<=0) throw new Error("ISO を正しく入力してください。");
     if(!Number.isFinite(reflectanceValue)||reflectanceValue<0||reflectanceValue>1) throw new Error("Reflectance は 0〜1 の範囲で入力してください。");
 
@@ -422,7 +420,8 @@ function calculateEV(){
 }
 function resetEV(){
   evApertureInput.value="8";
-  evShutterInput.value="0.008";
+  evShutterPresetSelect.value="1/60";
+  evShutterInput.value="1/60";
   evIsoInput.value=String(DEFAULTS.iso);
   evReflectanceInput.value=String(DEFAULTS.reflectance);
   calculateEV();
@@ -623,6 +622,17 @@ function initEventListeners(){
 
   evCalcBtn.addEventListener("click",calculateEV);
   evResetBtn.addEventListener("click",resetEV);
+  evShutterPresetSelect.addEventListener("change",()=>{
+    if(evShutterPresetSelect.value!=="custom"){
+      evShutterInput.value=evShutterPresetSelect.value;
+      calculateEV();
+    }
+  });
+  evShutterInput.addEventListener("input",()=>{
+    if(evShutterInput.value.trim()!==evShutterPresetSelect.value){
+      evShutterPresetSelect.value="custom";
+    }
+  });
 
   hdrCalcBtn.addEventListener("click",calculateHDR);
   hdrResetBtn.addEventListener("click",resetHDR);
