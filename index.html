@@ -1,95 +1,210 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Light Unit Converter</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <main class="container">
-    <header class="hero">
-      <h1>Light Unit Converter</h1>
-      <p class="subtitle">lm / cd / lx / nit / EV / stops / exposure / W/m² / sr を仮定つきで変換するツール</p>
-    </header>
+const inputValue=document.getElementById("inputValue");
+const inputUnit=document.getElementById("inputUnit");
+const distance=document.getElementById("distance");
+const solidAngle=document.getElementById("solidAngle");
+const beamAngle=document.getElementById("beamAngle");
+const reflectance=document.getElementById("reflectance");
+const efficacy=document.getElementById("efficacy");
+const resultLm=document.getElementById("resultLm");
+const resultCd=document.getElementById("resultCd");
+const resultLx=document.getElementById("resultLx");
+const resultNit=document.getElementById("resultNit");
+const resultEv=document.getElementById("resultEv");
+const resultStops=document.getElementById("resultStops");
+const resultExposure=document.getElementById("resultExposure");
+const resultWm2=document.getElementById("resultWm2");
+const resultSr=document.getElementById("resultSr");
+const resultBeamAngle=document.getElementById("resultBeamAngle");
+const convertBtn=document.getElementById("convertBtn");
+const resetBtn=document.getElementById("resetBtn");
 
-    <section class="card">
-      <h2>Input</h2>
-      <div class="grid">
-        <div class="field">
-          <label for="inputValue">Value</label>
-          <input id="inputValue" type="number" step="any" value="1000">
-        </div>
-        <div class="field">
-          <label for="inputUnit">Unit</label>
-          <select id="inputUnit">
-            <option value="lm">Lumen (lm)</option>
-            <option value="cd">Candela (cd)</option>
-            <option value="lx">Lux (lx)</option>
-            <option value="nit">Nit (cd/m²)</option>
-            <option value="ev">EV</option>
-            <option value="stops">Stops</option>
-            <option value="exposure">Exposure</option>
-            <option value="wm2">W/m²</option>
-            <option value="sr">Steradian (sr)</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="distance">Distance (m)</label>
-          <input id="distance" type="number" step="any" value="1">
-        </div>
-        <div class="field">
-          <label for="solidAngle">Solid Angle (sr)</label>
-          <input id="solidAngle" type="number" step="any" value="3.1416">
-        </div>
-        <div class="field">
-          <label for="beamAngle">Beam Angle (deg)</label>
-          <input id="beamAngle" type="number" step="any" value="120">
-        </div>
-        <div class="field">
-          <label for="reflectance">Reflectance (0-1)</label>
-          <input id="reflectance" type="number" step="any" min="0" max="1" value="0.8">
-        </div>
-        <div class="field">
-          <label for="efficacy">Luminous Efficacy (lm/W)</label>
-          <input id="efficacy" type="number" step="any" value="683">
-        </div>
-      </div>
-      <div class="actions">
-        <button id="convertBtn">Convert</button>
-        <button id="resetBtn" class="secondary">Reset</button>
-      </div>
-    </section>
+function degToRad(deg){return deg*Math.PI/180;}
+function radToDeg(rad){return rad*180/Math.PI;}
+function clamp(value,min,max){return Math.min(Math.max(value,min),max);}
+function formatNumber(value){
+  if(!Number.isFinite(value)) return "-";
+  const abs=Math.abs(value);
+  if(abs>=100000||abs>0&&abs<0.001) return value.toExponential(4);
+  return Number(value.toFixed(4)).toString();
+}
+function beamAngleToSteradian(angleDeg){
+  const safe=clamp(angleDeg,0.0001,179.9999);
+  const half=degToRad(safe/2);
+  return 2*Math.PI*(1-Math.cos(half));
+}
+function steradianToBeamAngle(sr){
+  const safe=clamp(sr,0,2*Math.PI);
+  const cosHalf=1-safe/(2*Math.PI);
+  const half=Math.acos(clamp(cosHalf,-1,1));
+  return radToDeg(half*2);
+}
+function evToLux(ev){return 2.5*Math.pow(2,ev);}
+function luxToEv(lux){return lux>0?Math.log2(lux/2.5):NaN;}
+function stopsToExposure(stops){return Math.pow(2,stops);}
+function exposureToStops(exposure){return exposure>0?Math.log2(exposure):NaN;}
+function luxToWm2(lux,eff){return eff>0?lux/eff:NaN;}
+function wm2ToLux(wm2,eff){return wm2*eff;}
+function setResults(data){
+  resultLm.textContent=formatNumber(data.lm);
+  resultCd.textContent=formatNumber(data.cd);
+  resultLx.textContent=formatNumber(data.lx);
+  resultNit.textContent=formatNumber(data.nit);
+  resultEv.textContent=formatNumber(data.ev);
+  resultStops.textContent=formatNumber(data.stops);
+  resultExposure.textContent=formatNumber(data.exposure);
+  resultWm2.textContent=formatNumber(data.wm2);
+  resultSr.textContent=formatNumber(data.sr);
+  resultBeamAngle.textContent=formatNumber(data.beamAngle);
+}
+function syncFromBeamAngle(){
+  const angle=parseFloat(beamAngle.value);
+  if(Number.isFinite(angle)&&angle>0&&angle<180){
+    solidAngle.value=beamAngleToSteradian(angle).toFixed(4);
+  }
+}
+function syncFromSolidAngle(){
+  const sr=parseFloat(solidAngle.value);
+  if(Number.isFinite(sr)&&sr>=0&&sr<=2*Math.PI){
+    beamAngle.value=steradianToBeamAngle(sr).toFixed(4);
+  }
+}
+function convert(){
+  const value=parseFloat(inputValue.value);
+  const unit=inputUnit.value;
+  const dist=parseFloat(distance.value);
+  let sr=parseFloat(solidAngle.value);
+  let angle=parseFloat(beamAngle.value);
+  const rho=parseFloat(reflectance.value);
+  const eff=parseFloat(efficacy.value);
 
-    <section class="card">
-      <h2>Results</h2>
-      <div class="results">
-        <div class="result-item"><span class="result-label">Lumen (lm)</span><span class="result-value" id="resultLm">-</span></div>
-        <div class="result-item"><span class="result-label">Candela (cd)</span><span class="result-value" id="resultCd">-</span></div>
-        <div class="result-item"><span class="result-label">Lux (lx)</span><span class="result-value" id="resultLx">-</span></div>
-        <div class="result-item"><span class="result-label">Nit (cd/m²)</span><span class="result-value" id="resultNit">-</span></div>
-        <div class="result-item"><span class="result-label">EV</span><span class="result-value" id="resultEv">-</span></div>
-        <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="resultStops">-</span></div>
-        <div class="result-item"><span class="result-label">Exposure</span><span class="result-value" id="resultExposure">-</span></div>
-        <div class="result-item"><span class="result-label">W/m²</span><span class="result-value" id="resultWm2">-</span></div>
-        <div class="result-item"><span class="result-label">Steradian (sr)</span><span class="result-value" id="resultSr">-</span></div>
-        <div class="result-item"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="resultBeamAngle">-</span></div>
-      </div>
-    </section>
+  if(!Number.isFinite(value)){alert("Value を正しく入力してください。");return;}
+  if(!Number.isFinite(dist)||dist<=0){alert("Distance は 0 より大きい値にしてください。");return;}
+  if(!Number.isFinite(rho)||rho<0||rho>1){alert("Reflectance は 0〜1 の範囲で入力してください。");return;}
+  if(!Number.isFinite(eff)||eff<=0){alert("Luminous Efficacy は 0 より大きい値にしてください。");return;}
 
-    <section class="card note-card">
-      <h2>Assumptions</h2>
-      <ul>
-        <li>lm ↔ cd は sr を用いる: cd = lm / sr</li>
-        <li>cd ↔ lx は正面照射の逆二乗則: lx = cd / d²</li>
-        <li>lx ↔ nit は Lambert 面: nit = lx × reflectance / π</li>
-        <li>lx ↔ W/m² は luminous efficacy を使用: lx = W/m² × efficacy</li>
-        <li>EV ↔ lx は近似式: lx ≒ 2.5 × 2^EV</li>
-        <li>stops は EV と同じ相対段数、exposure は 2^stops</li>
-        <li>Beam Angle は円錐近似: sr = 2π(1-cos(θ/2))</li>
-      </ul>
-    </section>
-  </main>
-  <script src="script.js"></script>
-</body>
-</html>
+  if(Number.isFinite(sr)&&sr>0&&sr<=2*Math.PI){
+    angle=steradianToBeamAngle(sr);
+    beamAngle.value=angle.toFixed(4);
+  }else if(Number.isFinite(angle)&&angle>0&&angle<180){
+    sr=beamAngleToSteradian(angle);
+    solidAngle.value=sr.toFixed(4);
+  }else{
+    alert("Solid Angle または Beam Angle を正しく入力してください。");
+    return;
+  }
+
+  let lm=NaN,cd=NaN,lx=NaN,nit=NaN,ev=NaN,stops=NaN,exposure=NaN,wm2=NaN;
+
+  switch(unit){
+    case "lm":
+      lm=value;
+      cd=lm/sr;
+      lx=cd/(dist*dist);
+      nit=(lx*rho)/Math.PI;
+      ev=luxToEv(lx);
+      stops=ev;
+      exposure=stopsToExposure(stops);
+      wm2=luxToWm2(lx,eff);
+      break;
+    case "cd":
+      cd=value;
+      lm=cd*sr;
+      lx=cd/(dist*dist);
+      nit=(lx*rho)/Math.PI;
+      ev=luxToEv(lx);
+      stops=ev;
+      exposure=stopsToExposure(stops);
+      wm2=luxToWm2(lx,eff);
+      break;
+    case "lx":
+      lx=value;
+      cd=lx*(dist*dist);
+      lm=cd*sr;
+      nit=(lx*rho)/Math.PI;
+      ev=luxToEv(lx);
+      stops=ev;
+      exposure=stopsToExposure(stops);
+      wm2=luxToWm2(lx,eff);
+      break;
+    case "nit":
+      nit=value;
+      if(rho===0){alert("Reflectance が 0 だと nit から lux に変換できません。");return;}
+      lx=(nit*Math.PI)/rho;
+      cd=lx*(dist*dist);
+      lm=cd*sr;
+      ev=luxToEv(lx);
+      stops=ev;
+      exposure=stopsToExposure(stops);
+      wm2=luxToWm2(lx,eff);
+      break;
+    case "ev":
+      ev=value;
+      stops=ev;
+      exposure=stopsToExposure(stops);
+      lx=evToLux(ev);
+      cd=lx*(dist*dist);
+      lm=cd*sr;
+      nit=(lx*rho)/Math.PI;
+      wm2=luxToWm2(lx,eff);
+      break;
+    case "stops":
+      stops=value;
+      ev=stops;
+      exposure=stopsToExposure(stops);
+      lx=evToLux(ev);
+      cd=lx*(dist*dist);
+      lm=cd*sr;
+      nit=(lx*rho)/Math.PI;
+      wm2=luxToWm2(lx,eff);
+      break;
+    case "exposure":
+      exposure=value;
+      if(exposure<=0){alert("Exposure は 0 より大きい値にしてください。");return;}
+      stops=exposureToStops(exposure);
+      ev=stops;
+      lx=evToLux(ev);
+      cd=lx*(dist*dist);
+      lm=cd*sr;
+      nit=(lx*rho)/Math.PI;
+      wm2=luxToWm2(lx,eff);
+      break;
+    case "wm2":
+      wm2=value;
+      lx=wm2ToLux(wm2,eff);
+      cd=lx*(dist*dist);
+      lm=cd*sr;
+      nit=(lx*rho)/Math.PI;
+      ev=luxToEv(lx);
+      stops=ev;
+      exposure=stopsToExposure(stops);
+      break;
+    case "sr":
+      sr=value;
+      if(!Number.isFinite(sr)||sr<=0||sr>2*Math.PI){alert("Steradian は 0 より大きく 2π 以下にしてください。");return;}
+      solidAngle.value=sr.toFixed(4);
+      angle=steradianToBeamAngle(sr);
+      beamAngle.value=angle.toFixed(4);
+      lm=cd=lx=nit=ev=stops=exposure=wm2=NaN;
+      break;
+    default:
+      alert("未対応の単位です。");
+      return;
+  }
+
+  setResults({lm,cd,lx,nit,ev,stops,exposure,wm2,sr,beamAngle:angle});
+}
+function resetFields(){
+  inputValue.value="1000";
+  inputUnit.value="lm";
+  distance.value="1";
+  solidAngle.value="3.1416";
+  beamAngle.value="120";
+  reflectance.value="0.8";
+  efficacy.value="683";
+  convert();
+}
+beamAngle.addEventListener("input",syncFromBeamAngle);
+solidAngle.addEventListener("input",syncFromSolidAngle);
+convertBtn.addEventListener("click",convert);
+resetBtn.addEventListener("click",resetFields);
+window.addEventListener("load",convert);
