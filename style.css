@@ -216,6 +216,10 @@ button.secondary:hover{
   color:var(--muted);
   line-height:1.7;
 }
+input:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+}
 @media (max-width:760px){
   .container{
     margin:24px auto;
