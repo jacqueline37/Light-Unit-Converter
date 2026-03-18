@@ -26,6 +26,7 @@ window.AppUI={
 
   showTooltip(text,x,y){
     const {tooltip}=window.AppDom;
+    if(!tooltip) return;
     tooltip.textContent=text;
     tooltip.style.left=`${x + 12}px`;
     tooltip.style.top=`${y + 12}px`;
@@ -33,20 +34,23 @@ window.AppUI={
   },
 
   hideTooltip(){
-    window.AppDom.tooltip.classList.remove("show");
+    if(window.AppDom.tooltip) window.AppDom.tooltip.classList.remove("show");
   },
 
   updateShutterInputState(presetSelect,inputField){
+    if(!presetSelect || !inputField) return;
     inputField.disabled=presetSelect.value!=="custom";
   },
 
   syncShutterPairFromPreset(presetSelect,inputField,calcFn){
+    if(!presetSelect || !inputField) return;
     if(presetSelect.value!=="custom") inputField.value=presetSelect.value;
     this.updateShutterInputState(presetSelect,inputField);
-    calcFn();
+    if(typeof calcFn==="function") calcFn();
   },
 
   syncShutterPairFromInput(presetSelect,inputField){
+    if(!presetSelect || !inputField) return;
     if(inputField.value.trim()!==presetSelect.value){
       presetSelect.value="custom";
       this.updateShutterInputState(presetSelect,inputField);
@@ -54,6 +58,7 @@ window.AppUI={
   },
 
   populateShutterPresets(selectEl){
+    if(!selectEl) return;
     const {SHUTTER_PRESETS}=window.AppData;
     selectEl.innerHTML="";
     SHUTTER_PRESETS.forEach(value=>{
@@ -68,6 +73,7 @@ window.AppUI={
   populatePBRButtons(){
     const {PBR_PRESETS}=window.AppData;
     const {pbrPresetGrid}=window.AppDom;
+    if(!pbrPresetGrid) return;
     pbrPresetGrid.innerHTML="";
     PBR_PRESETS.forEach(preset=>{
       const button=document.createElement("button");
@@ -96,25 +102,25 @@ window.AppUI={
     const {DEFAULTS}=window.AppData;
     const d=window.AppDom;
 
-    d.convDistanceInput.value=String(DEFAULTS.distance);
-    d.convSrInput.value=DEFAULTS.sr.toFixed(4);
-    d.convBeamAngleInput.value=String(DEFAULTS.beamAngle);
-    d.convReflectanceInput.value=String(DEFAULTS.reflectance);
+    if(d.convDistanceInput) d.convDistanceInput.value=String(DEFAULTS.distance);
+    if(d.convSrInput) d.convSrInput.value=DEFAULTS.sr.toFixed(4);
+    if(d.convBeamAngleInput) d.convBeamAngleInput.value=String(DEFAULTS.beamAngle);
+    if(d.convReflectanceInput) d.convReflectanceInput.value=String(DEFAULTS.reflectance);
 
-    d.camIsoInput.value=String(DEFAULTS.iso);
-    d.camReflectanceInput.value=String(DEFAULTS.reflectance);
+    if(d.camIsoInput) d.camIsoInput.value=String(DEFAULTS.iso);
+    if(d.camReflectanceInput) d.camReflectanceInput.value=String(DEFAULTS.reflectance);
 
-    d.evIsoInput.value=String(DEFAULTS.iso);
-    d.evReflectanceInput.value=String(DEFAULTS.reflectance);
+    if(d.evIsoInput) d.evIsoInput.value=String(DEFAULTS.iso);
+    if(d.evReflectanceInput) d.evReflectanceInput.value=String(DEFAULTS.reflectance);
 
-    d.hdrReflectanceInput.value=String(DEFAULTS.reflectance);
-    d.acesMiddleGrayInput.value=String(DEFAULTS.middleGray);
+    if(d.hdrReflectanceInput) d.hdrReflectanceInput.value=String(DEFAULTS.reflectance);
+    if(d.acesMiddleGrayInput) d.acesMiddleGrayInput.value=String(DEFAULTS.middleGray);
 
-    d.iesDistanceInput.value=String(DEFAULTS.distance);
-    d.iesSrInput.value=DEFAULTS.sr.toFixed(4);
-    d.iesBeamAngleInput.value=String(DEFAULTS.beamAngle);
+    if(d.iesDistanceInput) d.iesDistanceInput.value=String(DEFAULTS.distance);
+    if(d.iesSrInput) d.iesSrInput.value=DEFAULTS.sr.toFixed(4);
+    if(d.iesBeamAngleInput) d.iesBeamAngleInput.value=String(DEFAULTS.beamAngle);
 
-    d.lambertReflectanceInput.value=String(DEFAULTS.reflectance);
+    if(d.lambertReflectanceInput) d.lambertReflectanceInput.value=String(DEFAULTS.reflectance);
   },
 
   updateGlobalModeUI(){
@@ -122,13 +128,19 @@ window.AppUI={
     const simple=window.AppUtils.isSimple();
 
     document.querySelectorAll(".adv").forEach(el=>el.classList.toggle("hidden",simple));
-    d.globalModeNote.textContent=simple
-      ? "Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, ISO = 100."
-      : "Advanced mode lets you edit physical assumptions directly, including distance, solid angle, beam angle, reflectance, ISO, and middle gray.";
+
+    if(d.globalModeNote){
+      d.globalModeNote.textContent=simple
+        ? "Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, ISO = 100."
+        : "Advanced mode lets you edit physical assumptions directly, including distance, solid angle, beam angle, reflectance, ISO, and middle gray.";
+    }
 
     if(simple) this.applySimpleDefaults();
 
-    window.ConverterModule.updateFieldVisibility();
+    if(window.ConverterModule && typeof window.ConverterModule.updateFieldVisibility==="function"){
+      window.ConverterModule.updateFieldVisibility();
+    }
+
     this.updateShutterInputState(d.evShutterPresetSelect,d.evShutterInput);
     this.updateShutterInputState(d.camShutterPresetSelect,d.camShutterInput);
   }
