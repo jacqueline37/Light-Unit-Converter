@@ -8,6 +8,19 @@ const DEFAULTS={
   middleGray:0.18
 };
 
+const RESULT_CARD_IDS={
+  lm:"convCardLm",
+  cd:"convCardCd",
+  lx:"convCardLx",
+  nit:"convCardNit",
+  ev:"convCardEv",
+  stops:"convCardStops",
+  exposure:"convCardExposure",
+  wm2:"convCardWm2",
+  sr:"convCardSr",
+  beamAngle:"convCardBeamAngle"
+};
+
 const globalModeNote=document.getElementById("globalModeNote");
 const globalModeRadios=document.querySelectorAll('input[name="globalMode"]');
 const tabButtons=document.querySelectorAll(".tab-btn");
@@ -106,8 +119,11 @@ function radToDeg(rad){
 function clamp(value,min,max){
   return Math.min(Math.max(value,min),max);
 }
+function isFinitePositive(value){
+  return Number.isFinite(value)&&value>0;
+}
 function formatNumber(value){
-  if(!Number.isFinite(value)) return "-";
+  if(!Number.isFinite(value)) return "—";
   const abs=Math.abs(value);
   if(abs>=100000||(abs>0&&abs<0.001)) return value.toExponential(4);
   return Number(value.toFixed(4)).toString();
@@ -155,13 +171,13 @@ function evAtIsoFromEv100(ev100,iso){
 }
 function parseShutter(value){
   if(typeof value!=="string") return NaN;
-  const text=value.trim();
+  const text=value.trim().replace(/s$/i,"");
   if(text.length===0) return NaN;
   if(text.includes("/")){
     const parts=text.split("/");
     if(parts.length!==2) return NaN;
-    const numerator=parseFloat(parts[0]);
-    const denominator=parseFloat(parts[1]);
+    const numerator=parseFloat(parts[0].trim());
+    const denominator=parseFloat(parts[1].trim());
     if(!Number.isFinite(numerator)||!Number.isFinite(denominator)||denominator===0) return NaN;
     return numerator/denominator;
   }
@@ -175,20 +191,31 @@ function activateTab(tabName){
   tabButtons.forEach(btn=>btn.classList.toggle("active",btn.dataset.tab===tabName));
   tabPanels.forEach(panel=>panel.classList.toggle("active",panel.id===`tab-${tabName}`));
 }
+function clearConverterHighlights(){
+  Object.values(RESULT_CARD_IDS).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.classList.remove("result-item-active");
+  });
+}
+function highlightConverterResults(keys){
+  clearConverterHighlights();
+  keys.forEach(key=>{
+    const id=RESULT_CARD_IDS[key];
+    if(!id) return;
+    const el=document.getElementById(id);
+    if(el) el.classList.add("result-item-active");
+  });
+}
 function applySimpleDefaults(){
   convDistanceInput.value=String(DEFAULTS.distance);
   convSrInput.value=DEFAULTS.sr.toFixed(4);
   convBeamAngleInput.value=String(DEFAULTS.beamAngle);
   convReflectanceInput.value=String(DEFAULTS.reflectance);
   convEfficacyInput.value=String(DEFAULTS.efficacy);
-
   evIsoInput.value=String(DEFAULTS.iso);
   evReflectanceInput.value=String(DEFAULTS.reflectance);
-
   hdrReflectanceInput.value=String(DEFAULTS.reflectance);
-
   acesMiddleGrayInput.value=String(DEFAULTS.middleGray);
-
   iesDistanceInput.value=String(DEFAULTS.distance);
   iesSrInput.value=DEFAULTS.sr.toFixed(4);
   iesBeamAngleInput.value=String(DEFAULTS.beamAngle);
@@ -197,7 +224,7 @@ function updateGlobalModeUI(){
   const simple=isSimple();
   document.querySelectorAll(".adv").forEach(el=>el.classList.toggle("hidden",simple));
   globalModeNote.textContent=simple
-    ? "Simple mode uses recommended defaults: distance = 1m, sr = 2π, beam angle = 180°, reflectance = 0.8, efficacy = 683 lm/W, ISO = 100."
+    ? "Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, efficacy = 683 lm/W, ISO = 100."
     : "Advanced mode lets you edit physical assumptions directly, including distance, solid angle, beam angle, reflectance, efficacy, ISO, and middle gray.";
   if(simple) applySimpleDefaults();
   updateConverterFieldVisibility();
@@ -246,9 +273,9 @@ function getConverterParams(){
   const reflectance=parseFloat(convReflectanceInput.value);
   const efficacy=parseFloat(convEfficacyInput.value);
 
-  if(!Number.isFinite(distance)||distance<=0) throw new Error("Distance は 0 より大きい値にしてください。");
-  if(!Number.isFinite(reflectance)||reflectance<0||reflectance>1) throw new Error("Reflectance は 0〜1 の範囲で入力してください。");
-  if(!Number.isFinite(efficacy)||efficacy<=0) throw new Error("Luminous Efficacy は 0 より大きい値にしてください。");
+  if(!isFinitePositive(distance)) throw new Error("Distance must be greater than 0.");
+  if(!Number.isFinite(reflectance)||reflectance<0||reflectance>1) throw new Error("Reflectance must be between 0 and 1.");
+  if(!isFinitePositive(efficacy)) throw new Error("Luminous efficacy must be greater than 0.");
 
   if(Number.isFinite(sr)&&sr>0&&sr<=2*Math.PI){
     beamAngle=steradianToBeamAngle(sr);
@@ -257,7 +284,7 @@ function getConverterParams(){
     sr=beamAngle===180?2*Math.PI:beamAngleToSteradian(beamAngle);
     convSrInput.value=sr.toFixed(4);
   }else{
-    throw new Error("Solid Angle または Beam Angle を正しく入力してください。");
+    throw new Error("Enter a valid solid angle (sr) or beam angle (0–180°).");
   }
 
   return {distance,sr,beamAngle,reflectance,efficacy};
@@ -278,7 +305,7 @@ function convertMain(){
   try{
     const value=parseFloat(convValueInput.value);
     const unit=convUnitSelect.value;
-    if(!Number.isFinite(value)) throw new Error("Value を正しく入力してください。");
+    if(!Number.isFinite(value)) throw new Error("Enter a valid numeric input value.");
 
     const params=getConverterParams();
     let lm=NaN,cd=NaN,lx=NaN,nit=NaN,ev=NaN,stops=NaN,exposure=NaN,wm2=NaN;
@@ -293,6 +320,7 @@ function convertMain(){
         stops=ev;
         exposure=stopsToExposure(stops);
         wm2=luxToWm2(lx,params.efficacy);
+        highlightConverterResults(["lm"]);
         break;
       case "cd":
         cd=value;
@@ -303,6 +331,7 @@ function convertMain(){
         stops=ev;
         exposure=stopsToExposure(stops);
         wm2=luxToWm2(lx,params.efficacy);
+        highlightConverterResults(["cd"]);
         break;
       case "lx":
         lx=value;
@@ -313,9 +342,11 @@ function convertMain(){
         stops=ev;
         exposure=stopsToExposure(stops);
         wm2=luxToWm2(lx,params.efficacy);
+        highlightConverterResults(["lx"]);
         break;
       case "nit":
         nit=value;
+        if(params.reflectance===0) throw new Error("Reflectance cannot be 0 when converting from nit.");
         lx=nitToLux(nit,params.reflectance);
         cd=lx*(params.distance*params.distance);
         lm=cd*params.sr;
@@ -323,6 +354,7 @@ function convertMain(){
         stops=ev;
         exposure=stopsToExposure(stops);
         wm2=luxToWm2(lx,params.efficacy);
+        highlightConverterResults(["nit"]);
         break;
       case "ev":
         ev=value;
@@ -333,6 +365,7 @@ function convertMain(){
         lm=cd*params.sr;
         nit=luxToNit(lx,params.reflectance);
         wm2=luxToWm2(lx,params.efficacy);
+        highlightConverterResults(["ev"]);
         break;
       case "stops":
         stops=value;
@@ -343,10 +376,11 @@ function convertMain(){
         lm=cd*params.sr;
         nit=luxToNit(lx,params.reflectance);
         wm2=luxToWm2(lx,params.efficacy);
+        highlightConverterResults(["stops"]);
         break;
       case "exposure":
         exposure=value;
-        if(exposure<=0) throw new Error("Exposure は 0 より大きい値にしてください。");
+        if(!isFinitePositive(exposure)) throw new Error("Exposure multiplier must be greater than 0.");
         stops=exposureToStops(exposure);
         ev=stops;
         lx=evToLux(ev);
@@ -354,6 +388,7 @@ function convertMain(){
         lm=cd*params.sr;
         nit=luxToNit(lx,params.reflectance);
         wm2=luxToWm2(lx,params.efficacy);
+        highlightConverterResults(["exposure"]);
         break;
       case "wm2":
         wm2=value;
@@ -364,21 +399,24 @@ function convertMain(){
         ev=luxToEv(lx);
         stops=ev;
         exposure=stopsToExposure(stops);
+        highlightConverterResults(["wm2"]);
         break;
       case "sr":
-        if(value<=0||value>2*Math.PI) throw new Error("Steradian は 0 より大きく 2π 以下にしてください。");
+        if(!(value>0&&value<=2*Math.PI)) throw new Error("Solid angle must be greater than 0 and at most 2π.");
         if(!isSimple()){
           convSrInput.value=Number(value).toFixed(4);
           convBeamAngleInput.value=steradianToBeamAngle(value).toFixed(4);
         }
         setConverterResults({lm:NaN,cd:NaN,lx:NaN,nit:NaN,ev:NaN,stops:NaN,exposure:NaN,wm2:NaN,sr:value,beamAngle:steradianToBeamAngle(value)});
+        highlightConverterResults(["sr","beamAngle"]);
         return;
       default:
-        throw new Error("未対応の単位です。");
+        throw new Error("Unsupported input unit.");
     }
 
     setConverterResults({lm,cd,lx,nit,ev,stops,exposure,wm2,sr:params.sr,beamAngle:params.beamAngle});
   }catch(error){
+    clearConverterHighlights();
     showError(error.message);
   }
 }
@@ -401,10 +439,10 @@ function calculateEV(){
     const isoValue=isSimple()?DEFAULTS.iso:parseFloat(evIsoInput.value);
     const reflectanceValue=isSimple()?DEFAULTS.reflectance:parseFloat(evReflectanceInput.value);
 
-    if(!Number.isFinite(aperture)||aperture<=0) throw new Error("Aperture を正しく入力してください。");
-    if(!Number.isFinite(shutter)||shutter<=0) throw new Error("Shutter を正しく入力してください。例: 1/60");
-    if(!Number.isFinite(isoValue)||isoValue<=0) throw new Error("ISO を正しく入力してください。");
-    if(!Number.isFinite(reflectanceValue)||reflectanceValue<0||reflectanceValue>1) throw new Error("Reflectance は 0〜1 の範囲で入力してください。");
+    if(!isFinitePositive(aperture)) throw new Error("Aperture must be greater than 0.");
+    if(!isFinitePositive(shutter)) throw new Error("Enter a valid shutter value, for example 1/60 or 0.0167.");
+    if(!isFinitePositive(isoValue)) throw new Error("ISO must be greater than 0.");
+    if(!Number.isFinite(reflectanceValue)||reflectanceValue<0||reflectanceValue>1) throw new Error("Reflectance must be between 0 and 1.");
 
     const ev100Value=ev100FromApertureShutter(aperture,shutter);
     const evAtIsoValue=evAtIsoFromEv100(ev100Value,isoValue);
@@ -439,14 +477,15 @@ function calculateHDR(){
     const unit=hdrUnitSelect.value;
     const reflectanceValue=isSimple()?DEFAULTS.reflectance:parseFloat(hdrReflectanceInput.value);
 
-    if(!Number.isFinite(value)) throw new Error("Value を正しく入力してください。");
-    if(!Number.isFinite(reflectanceValue)||reflectanceValue<0||reflectanceValue>1) throw new Error("Reflectance は 0〜1 の範囲で入力してください。");
+    if(!Number.isFinite(value)) throw new Error("Enter a valid numeric input value.");
+    if(!Number.isFinite(reflectanceValue)||reflectanceValue<0||reflectanceValue>1) throw new Error("Reflectance must be between 0 and 1.");
 
     let nitValue=NaN,luxValue=NaN,evValue=NaN,stopsValue=NaN,exposureValue=NaN;
 
     switch(unit){
       case "nit":
         nitValue=value;
+        if(reflectanceValue===0) throw new Error("Reflectance cannot be 0 when converting from nit.");
         luxValue=nitToLux(nitValue,reflectanceValue);
         evValue=luxToEv(luxValue);
         stopsValue=evValue;
@@ -468,7 +507,7 @@ function calculateHDR(){
         break;
       case "exposure":
         exposureValue=value;
-        if(exposureValue<=0) throw new Error("Exposure は 0 より大きい値にしてください。");
+        if(!isFinitePositive(exposureValue)) throw new Error("Exposure multiplier must be greater than 0.");
         stopsValue=exposureToStops(exposureValue);
         evValue=stopsValue;
         luxValue=evToLux(evValue);
@@ -482,7 +521,7 @@ function calculateHDR(){
         exposureValue=stopsToExposure(stopsValue);
         break;
       default:
-        throw new Error("未対応の入力タイプです。");
+        throw new Error("Unsupported HDR input type.");
     }
 
     hdrResultNit.textContent=formatNumber(nitValue);
@@ -507,9 +546,9 @@ function calculateACES(){
     const stopsValue=parseFloat(acesStopsInput.value);
     const middleGrayValue=isSimple()?DEFAULTS.middleGray:parseFloat(acesMiddleGrayInput.value);
 
-    if(!Number.isFinite(inputValue)||inputValue<0) throw new Error("Scene Linear Value を正しく入力してください。");
-    if(!Number.isFinite(stopsValue)) throw new Error("Stops を正しく入力してください。");
-    if(!Number.isFinite(middleGrayValue)||middleGrayValue<=0) throw new Error("Middle Gray を正しく入力してください。");
+    if(!Number.isFinite(inputValue)||inputValue<0) throw new Error("Scene linear value must be 0 or greater.");
+    if(!Number.isFinite(stopsValue)) throw new Error("Enter a valid stops value.");
+    if(!isFinitePositive(middleGrayValue)) throw new Error("Middle gray must be greater than 0.");
 
     const exposureValue=stopsToExposure(stopsValue);
     const outputValue=inputValue*exposureValue;
@@ -540,8 +579,8 @@ function calculateIES(){
     let srValue=isSimple()?DEFAULTS.sr:parseFloat(iesSrInput.value);
     let beamAngleValue=isSimple()?DEFAULTS.beamAngle:parseFloat(iesBeamAngleInput.value);
 
-    if(!Number.isFinite(lumenValue)||lumenValue<0) throw new Error("Lumen を正しく入力してください。");
-    if(!Number.isFinite(distanceValue)||distanceValue<=0) throw new Error("Distance は 0 より大きい値にしてください。");
+    if(!Number.isFinite(lumenValue)||lumenValue<0) throw new Error("Luminous flux must be 0 or greater.");
+    if(!isFinitePositive(distanceValue)) throw new Error("Distance must be greater than 0.");
 
     if(isSimple()){
       srValue=DEFAULTS.sr;
@@ -554,7 +593,7 @@ function calculateIES(){
         srValue=beamAngleValue===180?2*Math.PI:beamAngleToSteradian(beamAngleValue);
         iesSrInput.value=srValue.toFixed(4);
       }else{
-        throw new Error("Solid Angle または Beam Angle を正しく入力してください。");
+        throw new Error("Enter a valid solid angle (sr) or beam angle (0–180°).");
       }
     }
 
