@@ -1,10 +1,10 @@
 # Light Utility Suite
 
-Light Utility Suite is a static web tool for converting and estimating lighting-related values used in CG, photography, HDR, ACES, PBR, and photometric workflows.
+Light Utility Suite is a small static web tool for converting and estimating lighting-related values used in CG, photography, HDR, ACES, and PBR workflows.
 
-The tool focuses on conversions that can be performed consistently using simple geometric and photometric assumptions.
+I made this mainly as a personal reference while working with lighting in rendering and photography, but it may also be useful for others.
 
-It runs entirely in the browser and does not store any user data.
+The tool runs entirely in the browser and does not store any data.
 
 ---
 
@@ -12,20 +12,19 @@ It runs entirely in the browser and does not store any user data.
 
 This tool is intended for:
 
-- CG / DCC / Game engine lighting
-- Photography exposure reference
+- CG / DCC / game engine lighting
+- photography exposure reference
 - HDR / ACES workflows
-- PBR lighting setup
-- Photometric estimation
-- Learning relationships between lm / cd / lx / nit / EV
+- PBR scene setup
+- learning relationships between lm / cd / lx / nit / EV
 
-It is not a physical measurement tool, but a practical estimation utility.
+It is not a scientific measurement tool, but a practical helper for everyday lighting work.
 
 ---
 
-## Supported quantities
+## Supported values
 
-The tool works with the following values:
+The tool works with:
 
 - lumen (lm)
 - candela (cd)
@@ -37,7 +36,7 @@ The tool works with the following values:
 - solid angle (sr)
 - beam angle (deg)
 
-Conversions are only performed when physically consistent assumptions are available.
+Conversions are only performed when a reasonable physical assumption exists.
 
 ---
 
@@ -52,19 +51,17 @@ Convert between:
 - lx
 - nit
 - stops
-- exposure multiplier
-- solid angle (sr)
-- beam angle (deg)
+- exposure
+- solid angle
+- beam angle
 
-Conversions may require:
+Some conversions require:
 
 - distance
 - solid angle
 - reflectance
 
-Preset values are provided.
-
-The converter uses geometric and photometric assumptions when needed.
+The goal is not to support everything, but to keep conversions consistent.
 
 ---
 
@@ -74,41 +71,31 @@ Estimate exposure from camera settings.
 
 Inputs:
 
-- Aperture (f-number)
-- Shutter (preset or custom)
+- aperture
+- shutter
 - ISO
-- Reflectance
+- reflectance
 
 Outputs:
 
-- EV at ISO
+- EV
 - EV100
-- illuminance (lx)
-- luminance (nit)
+- lux
+- nit
 - stops
 - exposure multiplier
 
-Shutter supports presets and custom values.
-
-Uses standard photographic exposure equations.
+Uses standard photographic formulas.
 
 ---
 
 ### EV
 
-EV calculator.
-
-Uses:
+EV calculator based on
 
 EV100 = log2(N² / t)
 
-EVISO = EV100 − log2(ISO / 100)
-
-Approximate illuminance relation:
-
-lx ≈ 2.5 × 2^EV
-
-This relation is based on photographic exposure calibration and is intended as a practical approximation.
+Lux values are derived using a common photographic approximation.
 
 ---
 
@@ -122,38 +109,21 @@ Convert between:
 - exposure
 - lux
 
-Useful for:
-
-- HDR displays
-- tone mapping
-- brightness comparison
-
-Values are approximate and depend on assumptions.
+Useful for comparing brightness in HDR / rendering workflows.
 
 ---
 
 ### ACES
 
-Exposure helper for scene-linear workflows.
+Helper for scene-linear exposure calculations.
 
-Inputs:
+Supports:
 
-- scene linear value
 - stops
 - middle gray
-
-Outputs:
-
 - exposure multiplier
-- output scene linear
-- relative to middle gray
-- EV equivalent
 
-Default middle gray:
-
-0.18
-
-Intended for ACES / scene-linear rendering workflows.
+Default middle gray = 0.18
 
 ---
 
@@ -161,26 +131,12 @@ Intended for ACES / scene-linear rendering workflows.
 
 Simple photometric estimation.
 
-Inputs:
-
-- lumen
-- distance
-- solid angle
-- beam angle
-
-Outputs:
-
-- candela
-- lux
-- sr
-- beam angle
-
 Uses:
 
 cd = lm / sr  
 lx = cd / d²
 
-Assumes center direction and uniform beam.
+Assumes idealized beam shape.
 
 ---
 
@@ -192,63 +148,55 @@ Uses:
 
 nit = lx × reflectance / π
 
-Assumes ideal Lambertian surface.
+Assumes ideal Lambert surface.
 
-Not valid for:
-
-- specular materials
-- metal
-- emissive displays
-- complex BRDF
-
-Use as approximation only.
+This is only an approximation.
 
 ---
 
 ### PBR Reference
 
-Lighting presets for scene setup.
+Preset lighting levels for scene setup.
 
 Examples:
 
 - Moonlight
-- Dark interior
-- Room
+- Interior
 - Office
 - Overcast
 - Sunlight
 - HDR display
 
-Useful for rough lighting reference in CG scenes.
+Useful as rough reference values.
 
 ---
 
 ## Simple / Advanced mode
 
-Simple mode uses recommended defaults:
+Simple mode uses defaults:
 
 - distance = 1 m
 - sr = 2π
-- beam angle = 180°
+- beam = 180°
 - reflectance = 0.8
 - ISO = 100
 - middle gray = 0.18
 
-Advanced mode allows editing all parameters.
+Advanced mode allows editing parameters.
 
 ---
 
 ## Assumptions
 
-All conversions assume idealized physical models.
+All conversions use simplified physical models.
 
 Examples:
 
 - lm ↔ cd uses solid angle
-- cd ↔ lx assumes point source and normal incidence
-- lx ↔ nit assumes Lambertian reflection
-- beam angle ↔ sr assumes uniform circular cone
-- EV relations use photographic exposure calibration
+- cd ↔ lx assumes point source
+- lx ↔ nit assumes Lambert reflection
+- beam angle ↔ sr assumes circular cone
+- EV uses photographic calibration
 
 Results depend on these assumptions.
 
@@ -256,36 +204,14 @@ Results depend on these assumptions.
 
 ## Notes
 
-Some conversions require geometric or photometric assumptions.
+This tool was made as a personal utility.
 
-lm → cd requires solid angle  
-cd → lx requires distance  
-lx → nit assumes diffuse reflection  
-EV → lx uses photographic calibration  
+Values should be treated as estimates, not exact measurements.
 
-Values should be used as reference only.
-
-This tool is intended for practical lighting estimation in:
-
-- CG
-- rendering
-- photography
-- HDR workflows
-
-It is not intended for scientific measurement, calibration, or safety-critical use.
-
----
-
-## Privacy
-
-This tool runs entirely in the browser.
-
-No data is stored.
-
-No network requests are made.
+Do not use for scientific calibration or safety-critical work.
 
 ---
 
 ## License
 
-MIT License
+MIT
