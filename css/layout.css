@@ -33,6 +33,13 @@
 .tabs{
   gap:10px;
   margin-bottom:18px;
+  overflow-x:auto;
+  flex-wrap:nowrap;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{
+  display:none;
 }
 .preset-toolbar{
   display:flex;
