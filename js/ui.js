@@ -134,9 +134,10 @@ window.AppUI={
     document.querySelectorAll(".adv").forEach(el=>el.classList.toggle("hidden",simple));
 
     if(d.globalModeNote){
+      const i18n=window.I18n;
       d.globalModeNote.textContent=simple
-        ? "Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, ISO = 100."
-        : "Advanced mode lets you edit physical assumptions directly, including distance, solid angle, beam angle, reflectance, ISO, and middle gray.";
+        ?(i18n?i18n.get("mode.note.simple"):"Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, ISO = 100.")
+        :(i18n?i18n.get("mode.note.advanced"):"Advanced mode lets you edit physical assumptions directly, including distance, solid angle, beam angle, reflectance, ISO, and middle gray.");
     }
 
     if(simple) this.applySimpleDefaults();
