@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -33,7 +33,10 @@
 <body>
   <main class="container">
     <header class="hero">
-      <h1>Light Unit Converter for CG, HDR, ACES, PBR and Photography</h1>
+      <div class="hero-top">
+        <h1 data-i18n="hero.title">Light Unit Converter for CG, HDR, ACES, PBR and Photography</h1>
+        <button id="langToggleBtn" class="lang-btn" type="button">日本語</button>
+      </div>
       <p class="subtitle">Light Utility Suite is a free online light unit converter and estimation tool
 for CG, photography, HDR, ACES, PBR, and rendering workflows.<br>
 Convert between lumen, candela, lux, nit, EV, exposure, and solid angle.<br>
@@ -42,12 +45,12 @@ Values are approximate and based on simplified models.</p>
 
     <section class="card top-card">
       <div class="mode-row">
-        <label class="radio-option"><input type="radio" name="globalMode" value="simple" checked><span>Simple (Recommended Defaults)</span></label>
-        <label class="radio-option"><input type="radio" name="globalMode" value="advanced"><span>Advanced (Physical Parameters)</span></label>
+        <label class="radio-option"><input type="radio" name="globalMode" value="simple" checked><span data-i18n="mode.simple">Simple (Recommended Defaults)</span></label>
+        <label class="radio-option"><input type="radio" name="globalMode" value="advanced"><span data-i18n="mode.advanced">Advanced (Physical Parameters)</span></label>
       </div>
       <p class="mode-note" id="globalModeNote">Simple mode uses recommended defaults: distance = 1 m, sr = 2π, beam angle = 180°, reflectance = 0.8, ISO = 100.</p>
       <div class="defaults-box">
-        <div class="defaults-title">Recommended defaults</div>
+        <div class="defaults-title" data-i18n="defaults.title">Recommended defaults</div>
         <div class="defaults-list">
           <span>Distance: <strong>1 m</strong></span>
           <span>Solid Angle: <strong>2π sr</strong></span>
@@ -60,21 +63,21 @@ Values are approximate and based on simplified models.</p>
     </section>
 
     <nav class="tabs" role="tablist" aria-label="Tool Tabs">
-      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="converter">Converter</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="camera">Camera</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="ev">EV</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="hdr">HDR</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="aces">ACES</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="ies">IES</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lambert">Lambert</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="pbr">PBR Reference</button>
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="converter" data-i18n="tab.converter">Converter</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="camera" data-i18n="tab.camera">Camera</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="ev" data-i18n="tab.ev">EV</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="hdr" data-i18n="tab.hdr">HDR</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="aces" data-i18n="tab.aces">ACES</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="ies" data-i18n="tab.ies">IES</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lambert" data-i18n="tab.lambert">Lambert</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="pbr" data-i18n="tab.pbr">PBR Reference</button>
     </nav>
 
     <section class="tab-panel active" id="tab-converter">
       <div class="card">
-        <h2>Converter</h2>
+        <h2 data-i18n="conv.title">Converter</h2>
         <div class="preset-toolbar">
-          <label for="convPreset">Preset</label>
+          <label for="convPreset" data-i18n="conv.preset">Preset</label>
           <select id="convPreset">
             <option value="none" selected>None</option>
             <option value="moonlight">Moonlight</option>
@@ -89,27 +92,27 @@ Values are approximate and based on simplified models.</p>
 
         <div class="grid">
           <div class="field">
-            <label for="convValue">Value</label>
+            <label for="convValue" data-i18n="conv.value">Value</label>
             <input id="convValue" type="number" step="any" value="1000">
           </div>
           <div class="field">
-            <label for="convUnit">Input Unit</label>
+            <label for="convUnit" data-i18n="conv.unit">Input Unit</label>
             <div class="label-with-help">
               <select id="convUnit">
-                <option value="lm">Luminous Flux (lm)</option>
-                <option value="cd">Luminous Intensity (cd)</option>
-                <option value="lx">Illuminance (lx)</option>
-                <option value="nit">Luminance (cd/m², nit)</option>
-                <option value="stops">Stops</option>
-                <option value="exposure">Exposure Multiplier</option>
-                <option value="sr">Solid Angle (sr)</option>
+                <option value="lm" data-i18n="unit.lm">Luminous Flux (lm)</option>
+                <option value="cd" data-i18n="unit.cd">Luminous Intensity (cd)</option>
+                <option value="lx" data-i18n="unit.lx">Illuminance (lx)</option>
+                <option value="nit" data-i18n="unit.nit">Luminance (cd/m², nit)</option>
+                <option value="stops" data-i18n="unit.stops">Stops</option>
+                <option value="exposure" data-i18n="unit.exposure">Exposure Multiplier</option>
+                <option value="sr" data-i18n="unit.sr">Solid Angle (sr)</option>
               </select>
               <button class="info-btn" type="button" data-tooltip-key="convUnit">?</button>
             </div>
           </div>
 
           <div class="field adv conv-param" data-roles="distance">
-            <label for="convDistance">Distance (m)</label>
+            <label for="convDistance" data-i18n="conv.distance">Distance (m)</label>
             <div class="label-with-help">
               <input id="convDistance" type="number" step="any" value="1">
               <button class="info-btn" type="button" data-tooltip-key="distance">?</button>
@@ -117,7 +120,7 @@ Values are approximate and based on simplified models.</p>
           </div>
 
           <div class="field adv conv-param" data-roles="sr">
-            <label for="convSr">Solid Angle (sr)</label>
+            <label for="convSr" data-i18n="conv.sr">Solid Angle (sr)</label>
             <div class="label-with-help">
               <input id="convSr" type="number" step="any" value="6.2832">
               <button class="info-btn" type="button" data-tooltip-key="sr">?</button>
@@ -125,7 +128,7 @@ Values are approximate and based on simplified models.</p>
           </div>
 
           <div class="field adv conv-param" data-roles="sr">
-            <label for="convBeamAngle">Beam Angle (deg)</label>
+            <label for="convBeamAngle" data-i18n="conv.beamAngle">Beam Angle (deg)</label>
             <div class="label-with-help">
               <input id="convBeamAngle" type="number" step="any" value="180">
               <button class="info-btn" type="button" data-tooltip-key="beamAngle">?</button>
@@ -133,7 +136,7 @@ Values are approximate and based on simplified models.</p>
           </div>
 
           <div class="field adv conv-param" data-roles="reflectance">
-            <label for="convReflectance">Reflectance (0-1)</label>
+            <label for="convReflectance" data-i18n="conv.reflectance">Reflectance (0–1)</label>
             <div class="label-with-help">
               <input id="convReflectance" type="number" step="any" min="0" max="1" value="0.8">
               <button class="info-btn" type="button" data-tooltip-key="reflectance">?</button>
@@ -142,287 +145,287 @@ Values are approximate and based on simplified models.</p>
         </div>
 
         <div class="actions">
-          <button id="convConvertBtn">Convert</button>
-          <button id="convResetBtn" class="secondary">Reset</button>
+          <button id="convConvertBtn" data-i18n="conv.btn.convert">Convert</button>
+          <button id="convResetBtn" class="secondary" data-i18n="conv.btn.reset">Reset</button>
         </div>
       </div>
 
       <div class="card">
-        <h2>Converter Results</h2>
+        <h2 data-i18n="conv.results.title">Converter Results</h2>
         <div class="results">
-          <div class="result-item" id="convCardLm"><span class="result-label">Luminous Flux (lm)</span><span class="result-value" id="convResultLm">-</span></div>
-          <div class="result-item" id="convCardCd"><span class="result-label">Luminous Intensity (cd)</span><span class="result-value" id="convResultCd">-</span></div>
-          <div class="result-item" id="convCardLx"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="convResultLx">-</span></div>
-          <div class="result-item" id="convCardNit"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="convResultNit">-</span></div>
-          <div class="result-item" id="convCardStops"><span class="result-label">Stops</span><span class="result-value" id="convResultStops">-</span></div>
-          <div class="result-item" id="convCardExposure"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="convResultExposure">-</span></div>
-          <div class="result-item" id="convCardSr"><span class="result-label">Solid Angle (sr)</span><span class="result-value" id="convResultSr">-</span></div>
-          <div class="result-item" id="convCardBeamAngle"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="convResultBeamAngle">-</span></div>
+          <div class="result-item" id="convCardLm"><span class="result-label" data-i18n="result.lm">Luminous Flux (lm)</span><span class="result-value" id="convResultLm">-</span></div>
+          <div class="result-item" id="convCardCd"><span class="result-label" data-i18n="result.cd">Luminous Intensity (cd)</span><span class="result-value" id="convResultCd">-</span></div>
+          <div class="result-item" id="convCardLx"><span class="result-label" data-i18n="result.lx">Illuminance (lx)</span><span class="result-value" id="convResultLx">-</span></div>
+          <div class="result-item" id="convCardNit"><span class="result-label" data-i18n="result.nit">Luminance (cd/m², nit)</span><span class="result-value" id="convResultNit">-</span></div>
+          <div class="result-item" id="convCardStops"><span class="result-label" data-i18n="result.stops">Stops</span><span class="result-value" id="convResultStops">-</span></div>
+          <div class="result-item" id="convCardExposure"><span class="result-label" data-i18n="result.exposure">Exposure Multiplier</span><span class="result-value" id="convResultExposure">-</span></div>
+          <div class="result-item" id="convCardSr"><span class="result-label" data-i18n="result.sr">Solid Angle (sr)</span><span class="result-value" id="convResultSr">-</span></div>
+          <div class="result-item" id="convCardBeamAngle"><span class="result-label" data-i18n="result.beamAngle">Beam Angle (deg)</span><span class="result-value" id="convResultBeamAngle">-</span></div>
         </div>
       </div>
     </section>
 
     <section class="tab-panel" id="tab-camera">
       <div class="card">
-        <h2>Camera Mode</h2>
+        <h2 data-i18n="cam.title">Camera Mode</h2>
         <div class="grid">
           <div class="field">
-            <label for="camAperture">Aperture (f-number)</label>
+            <label for="camAperture" data-i18n="cam.aperture">Aperture (f-number)</label>
             <input id="camAperture" type="number" step="any" value="8">
           </div>
           <div class="field">
-            <label for="camShutterPreset">Shutter Preset</label>
+            <label for="camShutterPreset" data-i18n="cam.shutterPreset">Shutter Preset</label>
             <select id="camShutterPreset"></select>
           </div>
           <div class="field">
-            <label for="camShutterInput">Shutter (sec or fraction)</label>
+            <label for="camShutterInput" data-i18n="cam.shutter">Shutter (sec or fraction)</label>
             <input id="camShutterInput" type="text" value="1/60" placeholder="1/60 or 0.0167">
           </div>
           <div class="field">
-            <label for="camIso">ISO</label>
+            <label for="camIso" data-i18n="cam.iso">ISO</label>
             <input id="camIso" type="number" step="any" value="100">
           </div>
           <div class="field adv">
-            <label for="camReflectance">Reflectance (0-1)</label>
+            <label for="camReflectance" data-i18n="cam.reflectance">Reflectance (0–1)</label>
             <input id="camReflectance" type="number" step="any" min="0" max="1" value="0.8">
           </div>
         </div>
         <div class="actions">
-          <button id="camCalcBtn">Calculate</button>
-          <button id="camResetBtn" class="secondary">Reset</button>
+          <button id="camCalcBtn" data-i18n="cam.btn.calc">Calculate</button>
+          <button id="camResetBtn" class="secondary" data-i18n="cam.btn.reset">Reset</button>
         </div>
       </div>
 
       <div class="card">
-        <h2>Camera Results</h2>
+        <h2 data-i18n="cam.results.title">Camera Results</h2>
         <div class="results">
-          <div class="result-item"><span class="result-label">EV at ISO</span><span class="result-value" id="camResultEvIso">-</span></div>
-          <div class="result-item"><span class="result-label">EV100</span><span class="result-value" id="camResultEv100">-</span></div>
-          <div class="result-item"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="camResultLux">-</span></div>
-          <div class="result-item"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="camResultNit">-</span></div>
-          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="camResultStops">-</span></div>
-          <div class="result-item"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="camResultExposure">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="cam.result.evIso">EV at ISO</span><span class="result-value" id="camResultEvIso">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="cam.result.ev100">EV100</span><span class="result-value" id="camResultEv100">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="cam.result.lux">Illuminance (lx)</span><span class="result-value" id="camResultLux">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="cam.result.nit">Luminance (cd/m², nit)</span><span class="result-value" id="camResultNit">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="cam.result.stops">Stops</span><span class="result-value" id="camResultStops">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="cam.result.exposure">Exposure Multiplier</span><span class="result-value" id="camResultExposure">-</span></div>
         </div>
       </div>
     </section>
 
     <section class="tab-panel" id="tab-ev">
       <div class="card">
-        <h2>EV Calculator</h2>
+        <h2 data-i18n="ev.title">EV Calculator</h2>
         <div class="grid">
           <div class="field">
-            <label for="evAperture">Aperture (f-number)</label>
+            <label for="evAperture" data-i18n="ev.aperture">Aperture (f-number)</label>
             <input id="evAperture" type="number" step="any" value="8">
           </div>
           <div class="field">
-            <label for="evShutterPreset">Shutter Preset</label>
+            <label for="evShutterPreset" data-i18n="ev.shutterPreset">Shutter Preset</label>
             <select id="evShutterPreset"></select>
           </div>
           <div class="field">
-            <label for="evShutterInput">Shutter (sec or fraction)</label>
+            <label for="evShutterInput" data-i18n="ev.shutter">Shutter (sec or fraction)</label>
             <input id="evShutterInput" type="text" value="1/60" placeholder="1/60 or 0.0167">
           </div>
           <div class="field adv">
-            <label for="evIso">ISO</label>
+            <label for="evIso" data-i18n="ev.iso">ISO</label>
             <input id="evIso" type="number" step="any" value="100">
           </div>
           <div class="field adv">
-            <label for="evReflectance">Reflectance (0-1)</label>
+            <label for="evReflectance" data-i18n="ev.reflectance">Reflectance (0–1)</label>
             <input id="evReflectance" type="number" step="any" min="0" max="1" value="0.8">
           </div>
         </div>
         <div class="actions">
-          <button id="evCalcBtn">Calculate</button>
-          <button id="evResetBtn" class="secondary">Reset</button>
+          <button id="evCalcBtn" data-i18n="ev.btn.calc">Calculate</button>
+          <button id="evResetBtn" class="secondary" data-i18n="ev.btn.reset">Reset</button>
         </div>
       </div>
 
       <div class="card">
-        <h2>EV Results</h2>
+        <h2 data-i18n="ev.results.title">EV Results</h2>
         <div class="results">
-          <div class="result-item"><span class="result-label">EV at ISO</span><span class="result-value" id="evResultEvIso">-</span></div>
-          <div class="result-item"><span class="result-label">EV100</span><span class="result-value" id="evResultEv100">-</span></div>
-          <div class="result-item"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="evResultLux">-</span></div>
-          <div class="result-item"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="evResultNit">-</span></div>
-          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="evResultStops">-</span></div>
-          <div class="result-item"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="evResultExposure">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ev.result.evIso">EV at ISO</span><span class="result-value" id="evResultEvIso">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ev.result.ev100">EV100</span><span class="result-value" id="evResultEv100">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ev.result.lux">Illuminance (lx)</span><span class="result-value" id="evResultLux">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ev.result.nit">Luminance (cd/m², nit)</span><span class="result-value" id="evResultNit">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ev.result.stops">Stops</span><span class="result-value" id="evResultStops">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ev.result.exposure">Exposure Multiplier</span><span class="result-value" id="evResultExposure">-</span></div>
         </div>
       </div>
     </section>
 
     <section class="tab-panel" id="tab-hdr">
       <div class="card">
-        <h2>HDR Nit Calculator</h2>
+        <h2 data-i18n="hdr.title">HDR Nit Calculator</h2>
         <div class="grid">
           <div class="field">
-            <label for="hdrValue">Value</label>
+            <label for="hdrValue" data-i18n="hdr.value">Value</label>
             <input id="hdrValue" type="number" step="any" value="1000">
           </div>
           <div class="field">
-            <label for="hdrUnit">Input Type</label>
+            <label for="hdrUnit" data-i18n="hdr.unit">Input Type</label>
             <select id="hdrUnit">
-              <option value="nit">Luminance (cd/m², nit)</option>
-              <option value="ev">EV100</option>
-              <option value="stops">Stops</option>
-              <option value="exposure">Exposure Multiplier</option>
-              <option value="lx">Illuminance (lx)</option>
+              <option value="nit" data-i18n="hdr.opt.nit">Luminance (cd/m², nit)</option>
+              <option value="ev" data-i18n="hdr.opt.ev">EV100</option>
+              <option value="stops" data-i18n="hdr.opt.stops">Stops</option>
+              <option value="exposure" data-i18n="hdr.opt.exposure">Exposure Multiplier</option>
+              <option value="lx" data-i18n="hdr.opt.lx">Illuminance (lx)</option>
             </select>
           </div>
           <div class="field adv">
-            <label for="hdrReflectance">Reflectance (0-1)</label>
+            <label for="hdrReflectance" data-i18n="hdr.reflectance">Reflectance (0–1)</label>
             <input id="hdrReflectance" type="number" step="any" min="0" max="1" value="0.8">
           </div>
         </div>
         <div class="actions">
-          <button id="hdrCalcBtn">Calculate</button>
-          <button id="hdrResetBtn" class="secondary">Reset</button>
+          <button id="hdrCalcBtn" data-i18n="hdr.btn.calc">Calculate</button>
+          <button id="hdrResetBtn" class="secondary" data-i18n="hdr.btn.reset">Reset</button>
         </div>
       </div>
 
       <div class="card">
-        <h2>HDR Results</h2>
+        <h2 data-i18n="hdr.results.title">HDR Results</h2>
         <div class="results">
-          <div class="result-item"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="hdrResultNit">-</span></div>
-          <div class="result-item"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="hdrResultLux">-</span></div>
-          <div class="result-item"><span class="result-label">EV100</span><span class="result-value" id="hdrResultEv">-</span></div>
-          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="hdrResultStops">-</span></div>
-          <div class="result-item"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="hdrResultExposure">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="hdr.result.nit">Luminance (cd/m², nit)</span><span class="result-value" id="hdrResultNit">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="hdr.result.lux">Illuminance (lx)</span><span class="result-value" id="hdrResultLux">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="hdr.result.ev">EV100</span><span class="result-value" id="hdrResultEv">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="hdr.result.stops">Stops</span><span class="result-value" id="hdrResultStops">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="hdr.result.exposure">Exposure Multiplier</span><span class="result-value" id="hdrResultExposure">-</span></div>
         </div>
       </div>
     </section>
 
     <section class="tab-panel" id="tab-aces">
       <div class="card">
-        <h2>ACES Exposure Tool</h2>
+        <h2 data-i18n="aces.title">ACES Exposure Tool</h2>
         <div class="grid">
           <div class="field">
-            <label for="acesSceneLinear">Scene Linear Value</label>
+            <label for="acesSceneLinear" data-i18n="aces.sceneLinear">Scene Linear Value</label>
             <input id="acesSceneLinear" type="number" step="any" value="0.18">
           </div>
           <div class="field">
-            <label for="acesStops">Stops</label>
+            <label for="acesStops" data-i18n="aces.stops">Stops</label>
             <input id="acesStops" type="number" step="any" value="0">
           </div>
           <div class="field adv">
-            <label for="acesMiddleGray">Middle Gray (18% gray)</label>
+            <label for="acesMiddleGray" data-i18n="aces.middleGray">Middle Gray (18% gray)</label>
             <input id="acesMiddleGray" type="number" step="any" value="0.18">
           </div>
         </div>
         <div class="actions">
-          <button id="acesCalcBtn">Apply</button>
-          <button id="acesResetBtn" class="secondary">Reset</button>
+          <button id="acesCalcBtn" data-i18n="aces.btn.apply">Apply</button>
+          <button id="acesResetBtn" class="secondary" data-i18n="aces.btn.reset">Reset</button>
         </div>
       </div>
 
       <div class="card">
-        <h2>ACES Results</h2>
+        <h2 data-i18n="aces.results.title">ACES Results</h2>
         <div class="results">
-          <div class="result-item"><span class="result-label">Input Scene Linear</span><span class="result-value" id="acesResultInput">-</span></div>
-          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="acesResultStops">-</span></div>
-          <div class="result-item"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="acesResultExposure">-</span></div>
-          <div class="result-item"><span class="result-label">Output Scene Linear</span><span class="result-value" id="acesResultOutput">-</span></div>
-          <div class="result-item"><span class="result-label">Relative to Middle Gray</span><span class="result-value" id="acesResultRelativeGray">-</span></div>
-          <div class="result-item"><span class="result-label">EV Equivalent</span><span class="result-value" id="acesResultEv">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="aces.result.input">Input Scene Linear</span><span class="result-value" id="acesResultInput">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="aces.result.stops">Stops</span><span class="result-value" id="acesResultStops">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="aces.result.exposure">Exposure Multiplier</span><span class="result-value" id="acesResultExposure">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="aces.result.output">Output Scene Linear</span><span class="result-value" id="acesResultOutput">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="aces.result.relGray">Relative to Middle Gray</span><span class="result-value" id="acesResultRelativeGray">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="aces.result.ev">EV Equivalent</span><span class="result-value" id="acesResultEv">-</span></div>
         </div>
       </div>
     </section>
 
     <section class="tab-panel" id="tab-ies">
       <div class="card">
-        <h2>IES Helper</h2>
+        <h2 data-i18n="ies.title">IES Helper</h2>
         <div class="grid">
           <div class="field">
-            <label for="iesLm">Luminous Flux (lm)</label>
+            <label for="iesLm" data-i18n="ies.lm">Luminous Flux (lm)</label>
             <input id="iesLm" type="number" step="any" value="1000">
           </div>
           <div class="field">
-            <label for="iesDistance">Distance (m)</label>
+            <label for="iesDistance" data-i18n="ies.distance">Distance (m)</label>
             <input id="iesDistance" type="number" step="any" value="1">
           </div>
           <div class="field adv">
-            <label for="iesSr">Solid Angle (sr)</label>
+            <label for="iesSr" data-i18n="ies.sr">Solid Angle (sr)</label>
             <input id="iesSr" type="number" step="any" value="6.2832">
           </div>
           <div class="field adv">
-            <label for="iesBeamAngle">Beam Angle (deg)</label>
+            <label for="iesBeamAngle" data-i18n="ies.beamAngle">Beam Angle (deg)</label>
             <input id="iesBeamAngle" type="number" step="any" value="180">
           </div>
         </div>
         <div class="actions">
-          <button id="iesCalcBtn">Calculate</button>
-          <button id="iesResetBtn" class="secondary">Reset</button>
+          <button id="iesCalcBtn" data-i18n="ies.btn.calc">Calculate</button>
+          <button id="iesResetBtn" class="secondary" data-i18n="ies.btn.reset">Reset</button>
         </div>
       </div>
 
       <div class="card">
-        <h2>IES Results</h2>
+        <h2 data-i18n="ies.results.title">IES Results</h2>
         <div class="results">
-          <div class="result-item"><span class="result-label">Luminous Flux (lm)</span><span class="result-value" id="iesResultLm">-</span></div>
-          <div class="result-item"><span class="result-label">Luminous Intensity (cd)</span><span class="result-value" id="iesResultCd">-</span></div>
-          <div class="result-item"><span class="result-label">Illuminance at Distance (lx)</span><span class="result-value" id="iesResultLux">-</span></div>
-          <div class="result-item"><span class="result-label">Solid Angle (sr)</span><span class="result-value" id="iesResultSr">-</span></div>
-          <div class="result-item"><span class="result-label">Beam Angle (deg)</span><span class="result-value" id="iesResultBeamAngle">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ies.result.lm">Luminous Flux (lm)</span><span class="result-value" id="iesResultLm">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ies.result.cd">Luminous Intensity (cd)</span><span class="result-value" id="iesResultCd">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ies.result.lux">Illuminance at Distance (lx)</span><span class="result-value" id="iesResultLux">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ies.result.sr">Solid Angle (sr)</span><span class="result-value" id="iesResultSr">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="ies.result.beamAngle">Beam Angle (deg)</span><span class="result-value" id="iesResultBeamAngle">-</span></div>
         </div>
       </div>
     </section>
 
     <section class="tab-panel" id="tab-lambert">
       <div class="card">
-        <h2>Lambert Helper</h2>
+        <h2 data-i18n="lambert.title">Lambert Helper</h2>
         <div class="grid">
           <div class="field">
-            <label for="lambertValue">Value</label>
+            <label for="lambertValue" data-i18n="lambert.value">Value</label>
             <input id="lambertValue" type="number" step="any" value="100">
           </div>
           <div class="field">
-            <label for="lambertUnit">Input Type</label>
+            <label for="lambertUnit" data-i18n="lambert.unit">Input Type</label>
             <select id="lambertUnit">
-              <option value="lx">Illuminance (lx)</option>
-              <option value="nit">Luminance (cd/m², nit)</option>
+              <option value="lx" data-i18n="lambert.opt.lx">Illuminance (lx)</option>
+              <option value="nit" data-i18n="lambert.opt.nit">Luminance (cd/m², nit)</option>
             </select>
           </div>
           <div class="field">
-            <label for="lambertReflectance">Reflectance (0-1)</label>
+            <label for="lambertReflectance" data-i18n="lambert.reflectance">Reflectance (0–1)</label>
             <input id="lambertReflectance" type="number" step="any" min="0" max="1" value="0.8">
           </div>
         </div>
         <div class="actions">
-          <button id="lambertCalcBtn">Calculate</button>
-          <button id="lambertResetBtn" class="secondary">Reset</button>
+          <button id="lambertCalcBtn" data-i18n="lambert.btn.calc">Calculate</button>
+          <button id="lambertResetBtn" class="secondary" data-i18n="lambert.btn.reset">Reset</button>
         </div>
       </div>
 
       <div class="card">
-        <h2>Lambert Results</h2>
+        <h2 data-i18n="lambert.results.title">Lambert Results</h2>
         <div class="results">
-          <div class="result-item"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="lambertResultLux">-</span></div>
-          <div class="result-item"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="lambertResultNit">-</span></div>
-          <div class="result-item"><span class="result-label">Approximation</span><span class="result-value" id="lambertResultApprox">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="lambert.result.lux">Illuminance (lx)</span><span class="result-value" id="lambertResultLux">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="lambert.result.nit">Luminance (cd/m², nit)</span><span class="result-value" id="lambertResultNit">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="lambert.result.approx">Approximation</span><span class="result-value" id="lambertResultApprox">-</span></div>
         </div>
       </div>
     </section>
 
     <section class="tab-panel" id="tab-pbr">
       <div class="card">
-        <h2>PBR Light Reference</h2>
+        <h2 data-i18n="pbr.title">PBR Light Reference</h2>
         <div class="preset-grid" id="pbrPresetGrid"></div>
       </div>
 
       <div class="card">
-        <h2>Preset Result</h2>
+        <h2 data-i18n="pbr.results.title">Preset Result</h2>
         <div class="results">
-          <div class="result-item"><span class="result-label">Preset</span><span class="result-value" id="pbrResultName">-</span></div>
-          <div class="result-item"><span class="result-label">Illuminance (lx)</span><span class="result-value" id="pbrResultLux">-</span></div>
-          <div class="result-item"><span class="result-label">Luminance (cd/m², nit)</span><span class="result-value" id="pbrResultNit">-</span></div>
-          <div class="result-item"><span class="result-label">EV100</span><span class="result-value" id="pbrResultEv">-</span></div>
-          <div class="result-item"><span class="result-label">Stops</span><span class="result-value" id="pbrResultStops">-</span></div>
-          <div class="result-item"><span class="result-label">Exposure Multiplier</span><span class="result-value" id="pbrResultExposure">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="pbr.result.name">Preset</span><span class="result-value" id="pbrResultName">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="pbr.result.lux">Illuminance (lx)</span><span class="result-value" id="pbrResultLux">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="pbr.result.nit">Luminance (cd/m², nit)</span><span class="result-value" id="pbrResultNit">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="pbr.result.ev">EV100</span><span class="result-value" id="pbrResultEv">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="pbr.result.stops">Stops</span><span class="result-value" id="pbrResultStops">-</span></div>
+          <div class="result-item"><span class="result-label" data-i18n="pbr.result.exposure">Exposure Multiplier</span><span class="result-value" id="pbrResultExposure">-</span></div>
         </div>
       </div>
     </section>
 
     <section class="card note-card">
-      <h2>Assumptions</h2>
+      <h2 data-i18n="notes.assumptions.title">Assumptions</h2>
       <p>All conversions assume idealized physical models.</p>
       <ul>
         <li>lm ↔ cd: cd = lm / sr</li>
@@ -436,15 +439,15 @@ Values are approximate and based on simplified models.</p>
         <li>ACES tool uses scene-linear exposure multiplication around middle gray</li>
       </ul>
     </section>
-    
-       <section class="card note-card">
-      <h2>Notes</h2>
-         <ul>
-      <li>This tool was made as a personal utility.</li>
-      <li>All values are approximate and based on simplified models.</li>
-      <li>Do not use for scientific measurement, calibration, or safety-critical applications.</li>
-         </ul><br>
-      <h2>Feedback</h2>
+
+    <section class="card note-card">
+      <h2 data-i18n="notes.title">Notes</h2>
+      <ul>
+        <li>This tool was made as a personal utility.</li>
+        <li>All values are approximate and based on simplified models.</li>
+        <li>Do not use for scientific measurement, calibration, or safety-critical applications.</li>
+      </ul><br>
+      <h2 data-i18n="notes.feedback.title">Feedback</h2>
       <p>If you find incorrect results, bugs, or have suggestions, please open an issue on GitHub.</p>
       <p>
         <a href="https://github.com/jacqueline37/Light-Unit-Converter" target="_blank">
@@ -459,6 +462,7 @@ Values are approximate and based on simplified models.</p>
   <script src="js/data.js"></script>
   <script src="js/dom.js"></script>
   <script src="js/utils.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/converter.js"></script>
   <script src="js/camera.js"></script>
