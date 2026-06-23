@@ -104,6 +104,8 @@
 
     initEventListeners();
 
+    window.I18n.init();
+
     window.ConverterModule.reset();
     window.CameraModule.resetCamera();
     window.CameraModule.resetEV();
