@@ -1,7 +1,11 @@
 window.AppUI={
   activateTab(tabName){
     const {tabButtons,tabPanels}=window.AppDom;
-    tabButtons.forEach(btn=>btn.classList.toggle("active",btn.dataset.tab===tabName));
+    tabButtons.forEach(btn=>{
+      const active=btn.dataset.tab===tabName;
+      btn.classList.toggle("active",active);
+      btn.setAttribute("aria-selected",String(active));
+    });
     tabPanels.forEach(panel=>panel.classList.toggle("active",panel.id===`tab-${tabName}`));
   },
 
@@ -93,7 +97,7 @@ window.AppUI={
       btn.addEventListener("mouseenter",e=>this.showTooltip(TOOLTIP_TEXT[btn.dataset.tooltipKey]||"",e.clientX,e.clientY));
       btn.addEventListener("mousemove",e=>this.showTooltip(TOOLTIP_TEXT[btn.dataset.tooltipKey]||"",e.clientX,e.clientY));
       btn.addEventListener("mouseleave",()=>this.hideTooltip());
-      btn.addEventListener("focus",e=>this.showTooltip(TOOLTIP_TEXT[btn.dataset.tooltipKey]||"",e.clientX||0,e.clientY||0));
+      btn.addEventListener("focus",()=>{const r=btn.getBoundingClientRect();this.showTooltip(TOOLTIP_TEXT[btn.dataset.tooltipKey]||"",r.right,r.top);});
       btn.addEventListener("blur",()=>this.hideTooltip());
     });
   },
