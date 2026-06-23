@@ -94,6 +94,8 @@ window.ConverterModule={
           cd=lm/p.sr;
           lx=cd/(p.distance*p.distance);
           nit=u.luxToNit(lx,p.reflectance);
+          stops=u.luxToEv(lx);
+          exposure=u.stopsToExposure(stops);
           ui.highlightConverterResults(["lm"]);
           break;
 
@@ -102,6 +104,8 @@ window.ConverterModule={
           lm=cd*p.sr;
           lx=cd/(p.distance*p.distance);
           nit=u.luxToNit(lx,p.reflectance);
+          stops=u.luxToEv(lx);
+          exposure=u.stopsToExposure(stops);
           ui.highlightConverterResults(["cd"]);
           break;
 
@@ -110,6 +114,8 @@ window.ConverterModule={
           cd=lx*(p.distance*p.distance);
           lm=cd*p.sr;
           nit=u.luxToNit(lx,p.reflectance);
+          stops=u.luxToEv(lx);
+          exposure=u.stopsToExposure(stops);
           ui.highlightConverterResults(["lx"]);
           break;
 
@@ -119,6 +125,8 @@ window.ConverterModule={
           lx=u.nitToLux(nit,p.reflectance);
           cd=lx*(p.distance*p.distance);
           lm=cd*p.sr;
+          stops=u.luxToEv(lx);
+          exposure=u.stopsToExposure(stops);
           ui.highlightConverterResults(["nit"]);
           break;
 
