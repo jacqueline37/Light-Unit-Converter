@@ -14,6 +14,37 @@
   margin:0 0 16px;
   font-size:1.15rem;
 }
+.hero-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+}
+.hero-top h1{
+  margin:0 0 8px;
+  flex:1;
+}
+.lang-btn{
+  flex-shrink:0;
+  padding:8px 14px;
+  font-size:.88rem;
+  font-weight:700;
+  background:transparent;
+  color:var(--accent);
+  border:1px solid var(--accent);
+  border-radius:10px;
+  cursor:pointer;
+  transition:.18s ease;
+  transform:none;
+}
+.lang-btn:hover{
+  background:rgba(122,162,255,.12);
+  transform:none;
+}
+.lang-btn:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
 .tab-btn{
   border:1px solid var(--border);
   border-radius:12px;
